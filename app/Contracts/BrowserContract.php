@@ -3,5 +3,5 @@
 namespace App\Contracts;
 
 interface BrowserContract {
-    public function  open(String $val);
+    public function open(String $val);
 }

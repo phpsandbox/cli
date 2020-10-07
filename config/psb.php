@@ -9,7 +9,7 @@ return [
      |the default url that the browser would open to when a user is to generate access token
      |
      */
-    'TOKEN_URI' => 'https://www.example.com',
+    'TOKEN_URI' => 'https://phpsandbox.io/login/cli',
     /*
      |--------------------------------------------------------------------------
      | Default token validation url
@@ -18,7 +18,7 @@ return [
      |the default url to validate a user token
      |
      */
-     'VALIDATE_TOKEN_URI' => 'https://www.example.com',
+     'VALIDATE_TOKEN_URI' => 'https://phpsandbox.io/auth/login/dev',
     /*
      |--------------------------------------------------------------------------
      | Default token storage file
@@ -29,5 +29,4 @@ return [
      */
 
     'TOKEN_STORAGE' => getcwd().DIRECTORY_SEPARATOR.'token'
-
 ];

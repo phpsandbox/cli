@@ -32,9 +32,9 @@ class ZipExport extends Command
     {
         if (!$auth->check()){
             $response = $this->call('login');
-        };
-        $zip->export();
+        }
 
+        $zip->export();
     }
 
     /**
