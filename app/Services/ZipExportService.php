@@ -1,18 +1,18 @@
 <?php
 
-
 namespace App\Services;
-
 
 use App\Contracts\ZipExportContract;
 use PhpZip\Exception\ZipException;
+use PhpZip\Util\Iterator\IgnoreFilesRecursiveFilterIterator;
 use PhpZip\ZipFile;
+use RecursiveDirectoryIterator;
 
 /**
  * Class ZipExportService
  * @package App\Services
  */
-class ZipExportService  implements ZipExportContract
+class ZipExportService implements ZipExportContract
 {
 
     /**
@@ -22,7 +22,12 @@ class ZipExportService  implements ZipExportContract
      */
     protected  $ignoreFiles = [
                                     'vendor/',
-                                    'node_modules/'
+                                    'node_modules/',
+                                    /**
+                                     * We should add this if app is a laravel app
+                                     * We will need some kind of notebook type detector here
+                                     */
+//                                    'storage',
                               ];
     /**
      * The external zip object
@@ -34,14 +39,16 @@ class ZipExportService  implements ZipExportContract
     /**
      * ZipExportService constructor.
      */
-    public function __construct(){
+    public function __construct()
+    {
         $this->zipper = new ZipFile();
     }
 
     /**
      *  Handle the export process
      */
-    public function export(){
+    public function export()
+    {
         $this->createZip();
     }
 
@@ -49,20 +56,20 @@ class ZipExportService  implements ZipExportContract
     /**
      *
      */
-    protected function createZip(){
+    protected function createZip()
+    {
         try {
-            $directoryIterator = new \RecursiveDirectoryIterator($this->getZipPath());
+            $directoryIterator = new RecursiveDirectoryIterator($this->getZipPath());
 
-            $ignoreIterator = new \PhpZip\Util\Iterator\IgnoreFilesRecursiveFilterIterator(
+            $ignoreIterator = new IgnoreFilesRecursiveFilterIterator(
                 $directoryIterator,
                 $this->ignoreFiles
             );
             $this->zipper->addFilesFromIterator($ignoreIterator)
                         ->saveAsFile(sha1(microtime()).".zip");
-            }
-            catch (ZipException $e){
-                //there was a problem with the compression
-            }
+        } catch (ZipException $e){
+            //there was a problem with the compression
+        }
 
     }
 
@@ -71,7 +78,8 @@ class ZipExportService  implements ZipExportContract
      *
      * @return string
      */
-    public function getZipPath(){
+    public function getZipPath()
+    {
         return getcwd().DIRECTORY_SEPARATOR.'sample';
     }
 
@@ -80,7 +88,8 @@ class ZipExportService  implements ZipExportContract
      *
      * @return false|string
      */
-    public function getStoragePath(){
+    public function getStoragePath()
+    {
         return getcwd();
     }
 }
