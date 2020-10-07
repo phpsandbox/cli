@@ -38,7 +38,7 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         collect($this->serviceBindings)->each(function($attribute,$value){
-            app()->bind($value,$attribute);
+            app()->bind($value, $attribute);
         });
     }
 

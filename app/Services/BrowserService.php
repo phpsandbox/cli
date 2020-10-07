@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Services;
-
 
 class BrowserService
 {
@@ -12,21 +10,19 @@ class BrowserService
      *
      * @param $authUri
      */
-    public function  open($authUri){
+    public function  open($authUri)
+    {
+        switch (PHP_OS) {
+            case 'Darwin':
+                $opener = 'open';
+                break;
+            case 'WINNT':
+                $opener = 'start';
+                break;
+            default:
+                $opener = 'xdg-open';
+        }
 
-            switch (PHP_OS) {
-                case 'Darwin':
-                    $opener = 'open';
-                    break;
-                case 'WINNT':
-                    $opener = 'start';
-                    break;
-                default:
-                    $opener = 'xdg-open';
-            }
-            $opener = 'start';
-
-         exec(sprintf('%s %s', $opener, $authUri));
-
+        exec(sprintf('%s %s', $opener, $authUri));
     }
 }

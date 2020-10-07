@@ -5,15 +5,10 @@ namespace App\Services;
 use App\Commands\Auth\Auth;
 use App\Contracts\AuthenticationContract;
 use App\Contracts\BrowserContract;
-use App\Services\BrowserService;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Http;
 
-/**
- * Class Authentication
- * @package App\Services
- */
+
 class Authentication implements AuthenticationContract
 {
 
@@ -55,12 +50,14 @@ class Authentication implements AuthenticationContract
         return $this;
     }
 
-    protected  function  setTokenUrl(){
+    protected  function  setTokenUrl()
+    {
         $this->tokenUrl = config('psb.TOKEN_URI');
         return $this;
     }
 
-    protected function setValidateTokenUrl(){
+    protected function setValidateTokenUrl()
+    {
         $this->validateTokenUrl = config('psb.VALIDATE_TOKEN_URI');
         return $this;
     }
@@ -70,7 +67,6 @@ class Authentication implements AuthenticationContract
      */
     protected function  launchBrowser()
     {
-
         $browser = app()->make(BrowserContract::class);
         $browser->open($this->tokenUrl);
     }
@@ -96,7 +92,6 @@ class Authentication implements AuthenticationContract
     protected function storeNewToken($token)
     {
         File::put($this->tokenStorage,$token);
-        return;
     }
 
 
@@ -106,15 +101,15 @@ class Authentication implements AuthenticationContract
      */
     public  function check() : bool
     {
-
-        if (!$this->tokenFileExist()){
+        if (!$this->tokenFileExist()) {
             return false;
         }
+
         if (!$this->tokenIsValid(File::get($this->tokenStorage))){
             return false;
         }
-        return true;
 
+        return true;
     }
 
     /**
@@ -126,8 +121,7 @@ class Authentication implements AuthenticationContract
     {
         try {
             return File::get($this->tokenStorage);
-        }
-        catch(FileNotFoundException $e){
+        } catch(FileNotFoundException $e){
             return false;
         }
     }
@@ -154,7 +148,4 @@ class Authentication implements AuthenticationContract
     {
         return File::get($this->tokenStorage);
     }
-
-
-
 }

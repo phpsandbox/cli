@@ -3,9 +3,7 @@
 namespace App\Commands\Auth;
 
 use App\Contracts\AuthenticationContract;
-use App\Services\BrowserService;
 use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Support\Facades\File;
 use LaravelZero\Framework\Commands\Command;
 
 class Auth extends Command
@@ -23,7 +21,7 @@ class Auth extends Command
      *
      * @var string
      */
-    protected $description = 'logs in the authenticated user';
+    protected $description = 'Authenticates a User';
 
     /**
      * Execute the console command.
@@ -32,17 +30,17 @@ class Auth extends Command
      */
     public function handle(AuthenticationContract  $auth)
     {
-
-        $this->task("authenticating", function () use ($auth){
-            if(!$auth->check()){
+        $this->task("Authenticating", function() use($auth) {
+            if(!$auth->check()) {
                 $auth->setUpNewToken($this);
             }
+
             $token = $auth->retrieveToken();
-            return $auth->tokenIsValid($token)  ? $this->info('authentication was successful')
-                                                : $this->error('token could not be validated');
+
+            $auth->tokenIsValid($token)
+                ? $this->info('Authentication was successful.')
+                : $this->error('Token could not be validated.');
         });
-
-
     }
 
 
