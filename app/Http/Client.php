@@ -35,20 +35,20 @@ class Client
 
     protected  function  setRedirectToBrowserUrl()
     {
-        $this->redirectToBrowserUrl = config('psb.TOKEN_URI');
+        $this->redirectToBrowserUrl = config('psb.token_url');
         return $this;
     }
 
     protected function setFetchCliTokenUrl()
     {
-        $this->fetchCliTokenUrl = config('psb.VALIDATE_TOKEN_URI');
+        $this->fetchCliTokenUrl = config('psb.validate_token_url');
         return $this;
     }
 
 
     public function setFetchAuthUserUrl()
     {
-        $this->fetchAuthUserUrl = config('psb.FETCH_AUTH_USER_URL');
+        $this->fetchAuthUserUrl = config('psb.fetch_auth_user_url');
     }
 
 

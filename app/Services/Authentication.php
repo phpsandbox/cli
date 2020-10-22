@@ -52,19 +52,19 @@ class Authentication implements AuthenticationContract
      */
     protected function setTokenStorage()
     {
-        $this->tokenStorage = config('psb.TOKEN_STORAGE');
+        $this->tokenStorage = config('psb.token_storage');
         return $this;
     }
 
     protected  function  setTokenUrl()
     {
-        $this->tokenUrl = config('psb.TOKEN_URI');
+        $this->tokenUrl = config('psb.token_url');
         return $this;
     }
 
     protected function setValidateTokenUrl()
     {
-        $this->validateTokenUrl = config('psb.VALIDATE_TOKEN_URI');
+        $this->validateTokenUrl = config('psb.validate_token_url');
         return $this;
     }
 
@@ -115,7 +115,10 @@ class Authentication implements AuthenticationContract
      * @param $token
      */
     public function storeNewToken($token)
-    {
+    {   if(!is_dir(dirname($this->tokenStorage)))
+        {
+            mkdir(dirname($this->tokenStorage));
+        }
         File::put($this->tokenStorage,$token);
     }
 

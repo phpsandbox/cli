@@ -6,3 +6,5 @@
 .phpunit.result.cache
 .env
 *.zip
+/app/config/.phpsandbox
+token
