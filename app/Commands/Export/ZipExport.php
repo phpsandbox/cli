@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Commands;
+namespace App\Commands\Export;
 
 use App\Contracts\AuthenticationContract;
 use App\Contracts\ZipExportContract;

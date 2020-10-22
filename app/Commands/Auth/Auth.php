@@ -16,7 +16,7 @@ class Auth extends Command
      * @var string
      */
 
-    protected $signature = 'login';
+    protected $signature = 'login  {--access=}';
 
     /**
      * The description of the command.
@@ -60,9 +60,19 @@ class Auth extends Command
 
     protected function triggerNewLogin(AuthenticationContract  $auth)
     {
-        $auth->launchBrowser();
-        $access_token = $this->ask('enter the authentication token generated from the browser');
-       try
+
+        if ($this->option('access') != null)
+        {
+            $access_token = $this->option('access');
+        }
+        else
+        {
+            $auth->launchBrowser();
+            $access_token = $this->ask('enter the authentication token generated from the browser');
+
+        }
+
+        try
        {
            $token = $auth->fetchCliToken($access_token);
            $auth->storeNewToken($token);
