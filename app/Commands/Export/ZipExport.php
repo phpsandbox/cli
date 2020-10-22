@@ -4,8 +4,10 @@ namespace App\Commands\Export;
 
 use App\Contracts\AuthenticationContract;
 use App\Contracts\ZipExportContract;
+use App\Services\Validation;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
+use PhpZip\Exception\ZipException;
 
 class ZipExport extends Command
 {
@@ -28,7 +30,7 @@ class ZipExport extends Command
      *
      * @return mixed
      */
-    public function handle(ZipExportContract $zip , AuthenticationContract $auth)
+    public function handle(ZipExportContract $zip , AuthenticationContract $auth ,Validation $validate)
     {
         if (!$auth->check())
         {
@@ -36,7 +38,39 @@ class ZipExport extends Command
             ? $auth->setGuest()
             : $auth->login();
         }
-        $zip->export();
+        //run pre-compressing validation
+
+        if(!$validate->validate(getcwd(),['hasComposer','composerIsValid'])){
+            return $this->validationError($validate->errors());
+        }
+        try{
+            $file_name = $zip->compress();
+        }
+        catch (ZipException $e)
+        {
+            return $this->error("directory could not be compressed");
+        }
+
+        if(!$validate->validate(getcwd(),["size:$file_name"]))
+        {
+            return $this->validationError($validate->errors());
+        }
+       // $zip->upload();
+
+        $zip->cleanUp();
+
+
+
+
+
+
+
+
+    }
+
+    protected function validationError(array $errors)
+    {
+        return $this->error(implode("\n",$errors));
     }
 
     /**

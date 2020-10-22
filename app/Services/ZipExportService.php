@@ -36,20 +36,28 @@ class ZipExportService implements ZipExportContract
      */
     protected  $zipper;
 
+    protected  $fileStoragePath;
+
     /**
      * ZipExportService constructor.
      */
     public function __construct()
     {
         $this->zipper = new ZipFile();
+        $this->setFileStorage();
+    }
+
+    protected function setFileStorage()
+    {
+        $this->fileStoragePath = config('psb.files_storage');
     }
 
     /**
      *  Handle the export process
      */
-    public function export()
+    public function compress()
     {
-        $this->createZip();
+        return $this->createZip();
     }
 
 
@@ -58,20 +66,34 @@ class ZipExportService implements ZipExportContract
      */
     protected function createZip()
     {
-        try {
             $directoryIterator = new RecursiveDirectoryIterator($this->getZipPath());
 
             $ignoreIterator = new IgnoreFilesRecursiveFilterIterator(
                 $directoryIterator,
                 $this->ignoreFiles
             );
+            $compressed_file_name = sha1(microtime()).".zip";
             $this->zipper->addFilesFromIterator($ignoreIterator)
-                        ->saveAsFile(sha1(microtime()).".zip");
-        } catch (ZipException $e){
-            //there was a problem with the compression
-        }
+                        ->saveAsFile($this->getStoragePath($compressed_file_name));
+            return $compressed_file_name;
+    }
+
+    public function upload()
+    {
 
     }
+
+    public function cleanUp()
+    {
+        $files = glob(config('psb.files_storage').DIRECTORY_SEPARATOR."*");
+
+        foreach($files as $file)
+        {
+            unlink($file);
+        }
+    }
+
+
 
     /**
      * Get the path to the directory to be compressed
@@ -88,8 +110,13 @@ class ZipExportService implements ZipExportContract
      *
      * @return false|string
      */
-    public function getStoragePath()
+    public function getStoragePath($path = '')
     {
-        return getcwd();
+      if (!is_dir($this->fileStoragePath))
+      {
+          mkdir($this->fileStoragePath);
+      }
+
+       return implode(DIRECTORY_SEPARATOR,[$this->fileStoragePath,$path]);
     }
 }

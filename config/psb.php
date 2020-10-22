@@ -34,6 +34,20 @@ return [
                                     , 'token'
                             ]),
     /*
+     |--------------------------------------------------------------------------
+     | Default token storage file
+     |--------------------------------------------------------------------------
+     |
+     |the default file that stores the users token
+     |
+     */
+
+    'files_storage' => implode(DIRECTORY_SEPARATOR
+            ,[$_SERVER['HOME'] ?? __DIR__
+                , '.phpsandbox'
+                , 'files'
+            ]),
+    /*
     |--------------------------------------------------------------------------
     | Retrieve authenticated user
     |--------------------------------------------------------------------------
@@ -41,5 +55,14 @@ return [
     |the default file that stores the users token
     |
     */
-    'fetch_auth_user_url' => env('FETCH_AUTH_USER_URL','https://internal.phpsandbox.io/api/user')
+    'fetch_auth_user_url' => env('FETCH_AUTH_USER_URL','https://internal.phpsandbox.io/api/user'),
+    /*
+    |--------------------------------------------------------------------------
+    | Retrieve authenticated user
+    |--------------------------------------------------------------------------
+    |
+    |the default file that stores the users token
+    |
+    */
+    'max_file_size' => env('MAX_FILE_SIZE',1000)
 ];
