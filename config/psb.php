@@ -9,7 +9,7 @@ return [
      |the default url that the browser would open to when a user is to generate access token
      |
      */
-    'TOKEN_URI' => 'https://phpsandbox.io/login/cli',
+    'TOKEN_URI' => env('TOKEN_URI','https://phpsandbox.io/login/cli'),
     /*
      |--------------------------------------------------------------------------
      | Default token validation url
@@ -18,7 +18,7 @@ return [
      |the default url to validate a user token
      |
      */
-     'VALIDATE_TOKEN_URI' => 'https://phpsandbox.io/auth/login/dev',
+     'VALIDATE_TOKEN_URI' => env('VALIDATE_TOKEN_URI','https://phpsandbox.io/auth/login/dev'),
     /*
      |--------------------------------------------------------------------------
      | Default token storage file
@@ -28,5 +28,14 @@ return [
      |
      */
 
-    'TOKEN_STORAGE' => getcwd().DIRECTORY_SEPARATOR.'token'
+    'TOKEN_STORAGE' => getcwd().DIRECTORY_SEPARATOR.'token',
+    /*
+    |--------------------------------------------------------------------------
+    | Retrieve authenticated user
+    |--------------------------------------------------------------------------
+    |
+    |the default file that stores the users token
+    |
+    */
+    'FETCH_AUTH_USER_URL' => env('FETCH_AUTH_USER_URL','https://internal.phpsandbox.io/api/user')
 ];

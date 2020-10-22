@@ -30,10 +30,12 @@ class ZipExport extends Command
      */
     public function handle(ZipExportContract $zip , AuthenticationContract $auth)
     {
-        if (!$auth->check()){
-            $response = $this->call('login');
+        if (!$auth->check())
+        {
+           $this->confirm("you are not authenticated , continue as guest")
+            ? $auth->setGuest()
+            : $auth->login();
         }
-
         $zip->export();
     }
 

@@ -5,12 +5,17 @@ namespace App\Services;
 use App\Commands\Auth\Auth;
 use App\Contracts\AuthenticationContract;
 use App\Contracts\BrowserContract;
+use App\Http\Client;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\File;
 
 
 class Authentication implements AuthenticationContract
 {
+    protected Client  $client;
+
+    protected $isGuest = false;
 
     /**
      *  Default uri to generate token;
@@ -38,6 +43,7 @@ class Authentication implements AuthenticationContract
             ->setTokenUrl()
             ->setTokenStorage()
             ->setValidateTokenUrl();
+        $this->client = new Client();
     }
 
 
@@ -62,10 +68,15 @@ class Authentication implements AuthenticationContract
         return $this;
     }
 
+    public function retrieveCliToken($access_token)
+    {
+        $this->client;
+    }
+
     /**
      * open users browser to retrieve token
      */
-    protected function  launchBrowser()
+    public function  launchBrowser()
     {
         $browser = app()->make(BrowserContract::class);
         $browser->open($this->tokenUrl);
@@ -79,8 +90,22 @@ class Authentication implements AuthenticationContract
     public function setUpNewToken(Auth $command)
     {
         $this->launchBrowser();
-        $token = $command->ask('enter the authentication token generated from the browser');
-        $this->storeNewToken($token);
+        $access_token = $command->ask('enter the authentication token generated from the browser');
+        $cliToken = $this->fetchCliToken($access_token);
+        if(!is_bool($cliToken))
+        {
+            return   $this->storeNewToken($cliToken);
+        }
+        return false;
+
+
+
+    }
+
+    public function fetchCliToken($access_token)
+    {
+
+        return json_decode($this->client->fetchCliToken($access_token),true)['token'];
 
     }
 
@@ -89,9 +114,14 @@ class Authentication implements AuthenticationContract
      *
      * @param $token
      */
-    protected function storeNewToken($token)
+    public function storeNewToken($token)
     {
         File::put($this->tokenStorage,$token);
+    }
+
+    public function setGuest()
+    {
+        $this->isGuest = true;
     }
 
 
@@ -135,8 +165,9 @@ class Authentication implements AuthenticationContract
      */
     public  function tokenIsValid($token) : bool
     {
-        sleep(4);
-        return true;
+
+        return $this->client->getAuthenticatedUser($token) == 200;
+
     }
 
     /**

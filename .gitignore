@@ -5,3 +5,4 @@
 /sample
 .phpunit.result.cache
 .env
+*.zip
