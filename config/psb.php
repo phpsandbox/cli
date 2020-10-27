@@ -61,8 +61,17 @@ return [
     | Retrieve authenticated user
     |--------------------------------------------------------------------------
     |
-    |the default file that stores the users token
+    |maximum file upload size
     |
     */
-    'max_file_size' => env('MAX_FILE_SIZE',1000)
+    'max_file_size' => env('MAX_FILE_SIZE',1000),
+    /*
+    |--------------------------------------------------------------------------
+    | Retrieve authenticated user
+    |--------------------------------------------------------------------------
+    |
+    |maximum file upload size
+    |
+    */
+    'file_upload_url' => env('FILE_UPLOAD_URL','https://phpsandbox.io/api/cli/export')
 ];

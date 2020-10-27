@@ -21,7 +21,11 @@ class Client
     protected $fetchCliTokenUrl;
 
     protected $fetchAuthUserUrl;
+    /**
+     * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
+     */
 
+    private $fileUploadUrl;
 
 
     public function __construct()
@@ -29,8 +33,15 @@ class Client
         $this
             ->setRedirectToBrowserUrl()
             ->setFetchCliTokenUrl()
+            ->setFileUploadUrl()
             ->setFetchAuthUserUrl();
 
+    }
+
+    protected function setFileUploadUrl()
+    {
+        $this->fileUploadUrl = config('psb.file_upload_url');
+        return $this;
     }
 
     protected  function  setRedirectToBrowserUrl()
@@ -65,6 +76,31 @@ class Client
         $response = $this->withMainHeaders()->authenticateAs($token)->getClient()->get($this->fetchAuthUserUrl);
         $response->throw();
         return $response->status();
+    }
+
+    protected function getCompleteFilePath($filePath)
+    {
+        $base = config('psb.files_storage');
+        return $base.DIRECTORY_SEPARATOR.$filePath;
+    }
+
+    public function uploadCompressedFile($file_path, $token)
+    {
+        $client = $token != ''
+            ? $this->authenticateAs($token)->getClient()
+            : $this->getClient();
+
+        $response = $client->asForm()->post(
+            $this->fileUploadUrl,[
+                'multipart'=>[
+                    'name'=>'archive',
+                    'contents'=>fopen($this->getCompleteFilePath($file_path),'r')
+                ]
+            ]
+        );
+
+        $response->throw();
+        return $response->body();
     }
 
 

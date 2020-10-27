@@ -11,10 +11,22 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\File;
 
 
+/**
+ * Class Authentication
+ * @package App\Services
+ */
 class Authentication implements AuthenticationContract
 {
+    /**
+     * @var Client
+     *
+     * instance of the client class
+     */
     protected Client  $client;
 
+    /**
+     * @var bool
+     */
     protected $isGuest = false;
 
     /**
@@ -39,8 +51,7 @@ class Authentication implements AuthenticationContract
      */
     public function  __construct()
     {
-        $this
-            ->setTokenUrl()
+        $this->setTokenUrl()
             ->setTokenStorage()
             ->setValidateTokenUrl();
         $this->client = new Client();
@@ -56,18 +67,27 @@ class Authentication implements AuthenticationContract
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     protected  function  setTokenUrl()
     {
         $this->tokenUrl = config('psb.token_url');
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     protected function setValidateTokenUrl()
     {
         $this->validateTokenUrl = config('psb.validate_token_url');
         return $this;
     }
 
+    /**
+     * @param $access_token
+     */
     public function retrieveCliToken($access_token)
     {
         $this->client;
@@ -92,21 +112,19 @@ class Authentication implements AuthenticationContract
         $this->launchBrowser();
         $access_token = $command->ask('enter the authentication token generated from the browser');
         $cliToken = $this->fetchCliToken($access_token);
-        if(!is_bool($cliToken))
-        {
+        if(!is_bool($cliToken)){
             return   $this->storeNewToken($cliToken);
         }
         return false;
-
-
-
     }
 
+    /**
+     * @param $access_token
+     * @return mixed
+     */
     public function fetchCliToken($access_token)
     {
-
         return json_decode($this->client->fetchCliToken($access_token),true)['token'];
-
     }
 
     /**
@@ -122,6 +140,9 @@ class Authentication implements AuthenticationContract
         File::put($this->tokenStorage,$token);
     }
 
+    /**
+     *
+     */
     public function setGuest()
     {
         $this->isGuest = true;
@@ -132,9 +153,9 @@ class Authentication implements AuthenticationContract
      * Checks if a user is authenticated
      * @return bool
      */
-    public  function check() : bool
+    public  function check(): bool
     {
-        if (!$this->tokenFileExist()) {
+        if (!$this->tokenFileExist()){
             return false;
         }
 
@@ -150,7 +171,7 @@ class Authentication implements AuthenticationContract
      *
      * @return bool
      */
-    protected function tokenFileExist() : bool
+    protected function tokenFileExist(): bool
     {
         try {
             return File::get($this->tokenStorage);
@@ -166,11 +187,9 @@ class Authentication implements AuthenticationContract
      * @param $token
      * @return bool
      */
-    public  function tokenIsValid($token) : bool
+    public  function tokenIsValid($token): bool
     {
-
         return $this->client->getAuthenticatedUser($token) == 200;
-
     }
 
     /**
@@ -178,8 +197,8 @@ class Authentication implements AuthenticationContract
      *
      * @return string
      */
-    public function retrieveToken() : string
+    public function retrieveToken(): string
     {
-        return File::get($this->tokenStorage);
+        return File::get($this->tokenStorage) ?: '';
     }
 }

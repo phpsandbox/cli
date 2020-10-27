@@ -4,9 +4,10 @@
 namespace App\Exceptions;
 
 
+use Exception;
 use Throwable;
 
-class ValidationException extends  \Exception
+class ValidationException extends  Exception
 {
     public function __construct($message = "", $code = 0, Throwable $previous = null)
     {

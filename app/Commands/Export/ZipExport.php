@@ -28,26 +28,30 @@ class ZipExport extends Command
     /**
      * Execute the console command.
      *
+     * @param ZipExportContract $zip
+     * @param AuthenticationContract $auth
+     * @param Validation $validate
      * @return mixed
      */
-    public function handle(ZipExportContract $zip , AuthenticationContract $auth ,Validation $validate)
-    {
-        if (!$auth->check())
-        {
+    public function handle(
+        ZipExportContract $zip,
+        AuthenticationContract $auth,
+        Validation $validate
+    ) {
+        if (!$auth->check()) {
            $this->confirm("you are not authenticated , continue as guest")
             ? $auth->setGuest()
-            : $auth->login();
+            : $this->call('login');
         }
         //run pre-compressing validation
 
         if(!$validate->validate(getcwd(),['hasComposer','composerIsValid'])){
             return $this->validationError($validate->errors());
         }
-        try{
+        try {
             $file_name = $zip->compress();
         }
-        catch (ZipException $e)
-        {
+        catch (ZipException $e){
             return $this->error("directory could not be compressed");
         }
 
@@ -55,9 +59,9 @@ class ZipExport extends Command
         {
             return $this->validationError($validate->errors());
         }
-       // $zip->upload();
+        var_dump($zip->upload($file_name, $auth->retrieveToken()));
 
-        $zip->cleanUp();
+       // $zip->cleanUp();
 
 
 
@@ -70,13 +74,13 @@ class ZipExport extends Command
 
     protected function validationError(array $errors)
     {
-        return $this->error(implode("\n",$errors));
+         $this->error(implode("\n",$errors));
     }
 
     /**
      * Define the command's schedule.
      *
-     * @param  \Illuminate\Console\Scheduling\Schedule $schedule
+     * @param Schedule $schedule
      * @return void
      */
     public function schedule(Schedule $schedule): void

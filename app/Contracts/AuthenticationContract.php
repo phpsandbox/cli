@@ -13,4 +13,6 @@ interface AuthenticationContract
     public function retrieveToken(): string;
 
     public function setUpNewToken(Auth $command);
+
+
 }

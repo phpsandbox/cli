@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Contracts\ZipExportContract;
+use App\Http\Client;
 use PhpZip\Exception\ZipException;
 use PhpZip\Util\Iterator\IgnoreFilesRecursiveFilterIterator;
 use PhpZip\ZipFile;
@@ -37,6 +38,10 @@ class ZipExportService implements ZipExportContract
     protected  $zipper;
 
     protected  $fileStoragePath;
+    /**
+     * @var Client
+     */
+    private $client;
 
     /**
      * ZipExportService constructor.
@@ -44,6 +49,7 @@ class ZipExportService implements ZipExportContract
     public function __construct()
     {
         $this->zipper = new ZipFile();
+        $this->client = new Client();
         $this->setFileStorage();
     }
 
@@ -78,10 +84,7 @@ class ZipExportService implements ZipExportContract
             return $compressed_file_name;
     }
 
-    public function upload()
-    {
 
-    }
 
     public function cleanUp()
     {
@@ -102,12 +105,13 @@ class ZipExportService implements ZipExportContract
      */
     public function getZipPath()
     {
-        return getcwd().DIRECTORY_SEPARATOR.'sample';
+        return getcwd().DIRECTORY_SEPARATOR.'sample/matrix';
     }
 
     /**
      * Get the path to store the compressed file
      *
+     * @param string $path
      * @return false|string
      */
     public function getStoragePath($path = '')
@@ -116,7 +120,11 @@ class ZipExportService implements ZipExportContract
       {
           mkdir($this->fileStoragePath);
       }
+      return implode(DIRECTORY_SEPARATOR,[$this->fileStoragePath,$path]);
+    }
 
-       return implode(DIRECTORY_SEPARATOR,[$this->fileStoragePath,$path]);
+    public function upload($filepath, $token = '')
+    {
+        return $this->client->uploadCompressedFile($filepath, $token);
     }
 }
