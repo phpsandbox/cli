@@ -21,4 +21,9 @@
             <directory suffix=".php">./app</directory>
         </include>
     </coverage>
+
+    <php>
+        <env name="FILES_STORAGE" value="./sample/"/>
+        <env name="MAX_FILE_SIZE" value="100"/>
+    </php>
 </phpunit>

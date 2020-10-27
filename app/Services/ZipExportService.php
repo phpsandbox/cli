@@ -79,9 +79,10 @@ class ZipExportService implements ZipExportContract
                 $this->ignoreFiles
             );
             $compressed_file_name = sha1(microtime()).".zip";
+            $full_file_path = $this->getStoragePath($compressed_file_name);
             $this->zipper->addFilesFromIterator($ignoreIterator)
                         ->saveAsFile($this->getStoragePath($compressed_file_name));
-            return $compressed_file_name;
+            return $full_file_path;
     }
 
 

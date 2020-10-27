@@ -78,11 +78,7 @@ class Client
         return $response->status();
     }
 
-    protected function getCompleteFilePath($filePath)
-    {
-        $base = config('psb.files_storage');
-        return $base.DIRECTORY_SEPARATOR.$filePath;
-    }
+
 
     public function uploadCompressedFile($file_path, $token)
     {
@@ -94,7 +90,7 @@ class Client
             $this->fileUploadUrl,[
                 'multipart'=>[
                     'name'=>'archive',
-                    'contents'=>fopen($this->getCompleteFilePath($file_path),'r')
+                    'contents'=>fopen($file_path,'r')
                 ]
             ]
         );

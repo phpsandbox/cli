@@ -73,5 +73,5 @@ return [
     |maximum file upload size
     |
     */
-    'file_upload_url' => env('FILE_UPLOAD_URL','https://phpsandbox.io/api/cli/export')
+    'file_upload_url' => env('FILE_UPLOAD_URL','https://phpsandbox.io/api/cli/import')
 ];

@@ -55,7 +55,7 @@ class ZipExport extends Command
             return $this->error("directory could not be compressed");
         }
 
-        if(!$validate->validate(getcwd(),["size:$file_name"]))
+        if(!$validate->validate(getcwd(),["size,$file_name"]))
         {
             return $this->validationError($validate->errors());
         }

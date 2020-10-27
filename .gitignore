@@ -8,3 +8,6 @@
 *.zip
 /app/config/.phpsandbox
 token
+*.phpsandbox
+
+eeee

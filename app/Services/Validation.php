@@ -19,7 +19,7 @@ class Validation
     protected $directory;
 
 
-    protected $errors;
+    protected $errors = [];
 
     public function __construct()
     {
@@ -41,7 +41,7 @@ class Validation
 
     protected function parseRule($rule)
     {
-        $parse = explode(':', $rule);
+        $parse = explode(',', $rule);
 
         if (count($parse) < 2) {
             return [$rule, ''];
@@ -85,14 +85,8 @@ class Validation
 
     protected function validateFileSize($file)
     {
-        $file = config('psb.files_storage') . DIRECTORY_SEPARATOR . $file;
-
-        if (!file_exists($file)) {
-            $this->errors[] = 'An error occured';
-            return false;
-        }
         $file_size = filesize($file) / 1024;
-        if ($file_size > config('psb.max_file_size')) {
+        if ($file_size > env('MAX_FILE_SIZE')) {
             $this->errors[] = 'File execeeds the upload limit';
             return false;
         }

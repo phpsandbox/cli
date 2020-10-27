@@ -17,13 +17,14 @@
     ],
     "require": {
         "php": "^7.3",
+        "ext-json": "*",
         "composer/composer": "^1.10",
         "guzzlehttp/guzzle": "^6.5.5",
         "illuminate/http": "^8.0",
         "laminas/laminas-text": "^2.7",
         "laravel-zero/framework": "^8.0",
-        "nelexa/zip": "^3.3",
-      "ext-json": "*"
+        "mikey179/vfsstream": "^1.6",
+        "nelexa/zip": "^3.3"
     },
     "require-dev": {
         "mockery/mockery": "^1.4.2",
