@@ -60,6 +60,7 @@ class Validation
             return true;
         }
         $this->errors[] = 'Composer.json is missing in the project root directory';
+        return false;
     }
 
     protected function validateComposerIsValid()
