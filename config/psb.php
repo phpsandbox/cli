@@ -45,7 +45,7 @@ return [
     'files_storage' => implode(DIRECTORY_SEPARATOR
             ,[$_SERVER['HOME'] ?? __DIR__
                 , '.phpsandbox'
-                , 'files'
+
             ]),
     /*
     |--------------------------------------------------------------------------
