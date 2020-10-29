@@ -86,14 +86,6 @@ class Authentication implements AuthenticationContract
     }
 
     /**
-     * @param $access_token
-     */
-    public function retrieveCliToken($access_token)
-    {
-        $this->client;
-    }
-
-    /**
      * open users browser to retrieve token
      */
     public function  launchBrowser()
