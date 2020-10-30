@@ -86,17 +86,9 @@ class Client
             ? $this->authenticateAs($token)->getClient()
             : $this->getClient();
 
-        $response = $client->asForm()->post(
-            $this->fileUploadUrl,[
-                'multipart'=>[
-                    'name'=>'archive',
-                    'contents'=>fopen($file_path,'r')
-                ]
-            ]
-        );
-
-        $response->throw();
-        return $response->body();
+        $response = $client->attach('archive', fopen($file_path, 'r'))
+                            ->post($this->fileUploadUrl);
+        return $response->throw()->json();
     }
 
 

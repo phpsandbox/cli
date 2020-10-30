@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Contracts\BrowserContract;
 use App\Contracts\ZipExportContract;
 use App\Http\Client;
 use PhpZip\Exception\ZipException;
@@ -24,6 +25,8 @@ class ZipExportService implements ZipExportContract
     protected  $ignoreFiles = [
                                     'vendor/',
                                     'node_modules/',
+                                    '.git',
+
                                     /**
                                      * We should add this if app is a laravel app
                                      * We will need some kind of notebook type detector here
@@ -106,7 +109,7 @@ class ZipExportService implements ZipExportContract
      */
     public function getZipPath()
     {
-        return getcwd();
+        return getcwd().DIRECTORY_SEPARATOR.'sample/matrix';
     }
 
     /**
@@ -127,5 +130,18 @@ class ZipExportService implements ZipExportContract
     public function upload($filepath, $token = '')
     {
         return $this->client->uploadCompressedFile($filepath, $token);
+    }
+
+    protected function getNotebookUrl(array $details)
+    {
+        //i am hard coding this here for now, would change it once i see bosun's code and how to set a common
+        //base url for all urls
+        return "https://internal.phpsandbox.io/n/".$details['unique_id'];
+    }
+
+    public function openNotebook(array $details)
+    {
+        $browser = app()->make(BrowserContract::class);
+        $browser->open($this->getNotebookUrl($details));
     }
 }

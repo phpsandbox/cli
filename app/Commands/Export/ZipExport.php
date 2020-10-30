@@ -6,6 +6,7 @@ use App\Contracts\AuthenticationContract;
 use App\Contracts\ZipExportContract;
 use App\Services\Validation;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Http\Client\RequestException;
 use LaravelZero\Framework\Commands\Command;
 use PhpZip\Exception\ZipException;
 
@@ -55,11 +56,22 @@ class ZipExport extends Command
             return $this->error("directory could not be compressed");
         }
 
-        if(!$validate->validate(getcwd(),["size,$file_name"]))
-        {
+        if (!$validate->validate(getcwd(),["size,$file_name"])) {
             return $this->validationError($validate->errors());
         }
-        var_dump($zip->upload($file_name, $auth->retrieveToken()));
+        try {
+          $notebook_details = $zip->upload($file_name, $auth->retrieveToken());
+
+          $zip->openNotebook($notebook_details);
+        }
+        catch (RequestException $e)
+        {
+            if ($e->getCode() == 422){
+                return $this->error($e->getMessage());
+            }
+
+        }
+
 
        // $zip->cleanUp();
 
