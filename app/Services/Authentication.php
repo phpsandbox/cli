@@ -191,6 +191,13 @@ class Authentication implements AuthenticationContract
      */
     public function retrieveToken(): string
     {
-        return File::get($this->tokenStorage) ?: '';
+        return file_get_contents($this->tokenStorage);
+        try {
+            return File::get($this->tokenStorage);
+        }catch (FileNotFoundException $e)
+        {
+            return '';
+        }
+
     }
 }

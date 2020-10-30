@@ -104,7 +104,7 @@ class ZipExportService implements ZipExportContract
      *
      * @return string
      */
-    public function getZipPath()
+    protected function getZipPath()
     {
         return getcwd();
     }
@@ -115,7 +115,7 @@ class ZipExportService implements ZipExportContract
      * @param string $path
      * @return false|string
      */
-    public function getStoragePath($path = '')
+    protected function getStoragePath($path = '')
     {
       if (!is_dir($this->fileStoragePath))
       {
