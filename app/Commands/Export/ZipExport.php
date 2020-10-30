@@ -73,21 +73,8 @@ class ZipExport extends Command
                 }
 
             }
+            $zip->cleanUp();
         });
-
-
-
-
-
-
-       // $zip->cleanUp();
-
-
-
-
-
-
-
 
     }
 
