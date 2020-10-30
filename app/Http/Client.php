@@ -49,7 +49,7 @@ class Client
 
     protected function setRedirectToBrowserUrl()
     {
-        $this->redirectToBrowserUrl = config('psb.token_url');
+        $this->redirectToBrowserUrl = sprintf('%s/login/cli', config('psb.base_url'));
         return $this;
     }
 
