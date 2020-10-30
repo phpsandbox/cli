@@ -28,6 +28,7 @@ class Auth extends Command
     /**
      * Execute the console command.
      *
+     * @param AuthenticationContract $auth
      * @return mixed
      */
     public function handle(AuthenticationContract  $auth)
@@ -67,7 +68,6 @@ class Auth extends Command
         else {
             $auth->launchBrowser();
             $access_token = $this->ask('enter the authentication token generated from the browser');
-
         }
 
         try {

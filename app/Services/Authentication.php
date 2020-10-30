@@ -197,4 +197,9 @@ class Authentication implements AuthenticationContract
             return false;
         }
     }
+
+    public function logout()
+    {
+        return unlink($this->tokenStorage);
+    }
 }
