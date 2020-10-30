@@ -46,16 +46,16 @@ class Auth extends Command
 
     protected function tokenValidation(AuthenticationContract  $auth,$token)
     {
-        try
-        {
+        try {
             $auth->tokenIsValid($token)
                 ? $this->info('Authentication was successful.')
                 : $this->error('Token could not be validated.');
-        }
-        catch(ConnectionException $e)
-        {
+        } catch(ConnectionException $e) {
             return $this->couldNotConnect();
+        }catch (\Illuminate\Http\Client\RequestException $e){
+            return $this->invalidAccessToken();
         }
+
     }
 
     protected function triggerNewLogin(AuthenticationContract  $auth)
