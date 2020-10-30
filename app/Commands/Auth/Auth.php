@@ -73,7 +73,11 @@ class Auth extends Command
             $this->couldNotConnect();
             exit;
         } catch (RequestException $e) {
-            $this->invalidAccessToken();
+            if ($e->getCode() === 422) {
+                $this->invalidAccessToken();
+            } else {
+                $this->errorOccured();
+            }
             exit;
         }
     }
@@ -81,6 +85,11 @@ class Auth extends Command
     protected function invalidAccessToken()
     {
         $this->error('Invalid access token.');
+    }
+
+    protected function errorOccured()
+    {
+        $this->error('An error occured!');
     }
 
     protected function couldNotConnect()
