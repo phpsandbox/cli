@@ -29,7 +29,7 @@ return [
      */
 
     'token_storage' => implode(DIRECTORY_SEPARATOR
-                                    ,[$_SERVER['HOME'] ?? __DIR__
+                                    ,[$_SERVER['HOME'] ?? $_SERVER['USERPROFILE']
                                     , '.phpsandbox'
                                     , 'token'
                             ]),
