@@ -70,9 +70,9 @@ class Authentication implements AuthenticationContract
     /**
      * @return $this
      */
-    protected  function  setTokenUrl()
+    protected function setTokenUrl()
     {
-        $this->tokenUrl = config('psb.token_url');
+        $this->tokenUrl = sprintf('%s/login/cli', config('psb.base_url'));
         return $this;
     }
 
@@ -81,7 +81,7 @@ class Authentication implements AuthenticationContract
      */
     protected function setValidateTokenUrl()
     {
-        $this->validateTokenUrl = config('psb.validate_token_url');
+        $this->validateTokenUrl = sprintf('%s/api/cli/login', config('psb.base_url'));
         return $this;
     }
 
@@ -155,11 +155,11 @@ class Authentication implements AuthenticationContract
      */
     public  function check(): bool
     {
-        if (!$this->tokenFileExist()){
+        if (! $this->tokenFileExist()) {
             return false;
         }
 
-        if (!$this->tokenIsValid(File::get($this->tokenStorage))){
+        if (! $this->tokenIsValid(File::get($this->tokenStorage))){
             return false;
         }
 

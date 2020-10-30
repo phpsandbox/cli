@@ -3,9 +3,9 @@
 namespace App\Commands\Auth;
 
 use App\Contracts\AuthenticationContract;
-use GuzzleHttp\Exception\RequestException;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\RequestException;
 use LaravelZero\Framework\Commands\Command;
 
 class Auth extends Command
@@ -33,9 +33,8 @@ class Auth extends Command
     public function handle(AuthenticationContract  $auth)
     {
         $this->task("Authenticating", function() use($auth) {
-            if(!$auth->check())
-            {
-               $this->triggerNewLogin($auth);
+            if(! $auth->check()) {
+                $this->triggerNewLogin($auth);
             }
 
             $token = $auth->retrieveToken();
@@ -60,44 +59,33 @@ class Auth extends Command
 
     protected function triggerNewLogin(AuthenticationContract  $auth)
     {
-
-        if ($this->option('access') != null)
-        {
+        if ($this->option('access') != null) {
             $access_token = $this->option('access');
-        }
-        else
-        {
+        } else {
             $auth->launchBrowser();
             $access_token = $this->ask('enter the authentication token generated from the browser');
-
         }
 
-        try
-       {
-           $token = $auth->fetchCliToken($access_token);
-           $auth->storeNewToken($token);
-       }
-       catch (ConnectionException $e)
-       {
-           $this->couldNotConnect();
-           exit;
-       }
-       catch (\Illuminate\Http\Client\RequestException $e)
-       {
-           $this->invalidAccessToken();
-           exit;
-       }
-
+        try {
+            $token = $auth->fetchCliToken($access_token);
+            $auth->storeNewToken($token);
+        } catch (ConnectionException $e) {
+            $this->couldNotConnect();
+            exit;
+        } catch (RequestException $e) {
+            $this->invalidAccessToken();
+            exit;
+        }
     }
 
     protected function invalidAccessToken()
     {
-        return $this->error('Invalid access token');
+        $this->error('Invalid access token.');
     }
 
     protected function couldNotConnect()
     {
-        return $this->error('could not establish a connection. kindly check that your computer is connected to the internet');
+        $this->error('Could not establish a connection. Kindly check that your computer is connected to the internet.');
     }
 
 

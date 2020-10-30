@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'base_url' => $baseUrl = env('BASE_URL', 'https://phpsandbox.io'),
+
     /*
      |--------------------------------------------------------------------------
      | Default token generation url

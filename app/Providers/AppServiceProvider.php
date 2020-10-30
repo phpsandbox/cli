@@ -17,8 +17,7 @@ class AppServiceProvider extends ServiceProvider
         //contract => implememtation
         BrowserContract::class => BrowserService::class,
         AuthenticationContract::class => Authentication::class,
-        ZipExportContract::class => ZipExportService::class
-
+        ZipExportContract::class => ZipExportService::class,
     ];
     /**
      * Bootstrap any application services.
@@ -41,6 +40,4 @@ class AppServiceProvider extends ServiceProvider
             app()->bind($value, $attribute);
         });
     }
-
-
 }

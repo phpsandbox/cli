@@ -1,9 +1,6 @@
 <?php
 
-
 namespace App\Http;
-use GuzzleHttp\Exception\RequestException;
-use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 
 class Client
@@ -27,6 +24,11 @@ class Client
 
     private $fileUploadUrl;
 
+    /**
+     * @var \Illuminate\Http\Client\PendingRequest
+     */
+    private $httpClient;
+
 
     public function __construct()
     {
@@ -36,15 +38,16 @@ class Client
             ->setFileUploadUrl()
             ->setFetchAuthUserUrl();
 
+        $this->buildHttpClient();
     }
 
     protected function setFileUploadUrl()
     {
-        $this->fileUploadUrl = config('psb.file_upload_url');
+        $this->fileUploadUrl = '/cli/import';
         return $this;
     }
 
-    protected  function  setRedirectToBrowserUrl()
+    protected function setRedirectToBrowserUrl()
     {
         $this->redirectToBrowserUrl = config('psb.token_url');
         return $this;
@@ -52,33 +55,30 @@ class Client
 
     protected function setFetchCliTokenUrl()
     {
-        $this->fetchCliTokenUrl = config('psb.validate_token_url');
+        $this->fetchCliTokenUrl = 'cli/login';
         return $this;
     }
 
 
     public function setFetchAuthUserUrl()
     {
-        $this->fetchAuthUserUrl = config('psb.fetch_auth_user_url');
+        $this->fetchAuthUserUrl = '/user';
     }
 
 
     public function fetchCliToken($access_token)
     {
-            $response = $this->withMainHeaders()->getClient()->post($this->fetchCliTokenUrl,['code'=>$access_token]);
+            $response = $this->withMainHeaders()->getClient()->post($this->fetchCliTokenUrl, ['code' => $access_token]);
             $response->throw();
             return ($response->body());
     }
 
     public function getAuthenticatedUser($token)
     {
-
         $response = $this->withMainHeaders()->authenticateAs($token)->getClient()->get($this->fetchAuthUserUrl);
         $response->throw();
         return $response->status();
     }
-
-
 
     public function uploadCompressedFile($file_path, $token)
     {
@@ -90,7 +90,7 @@ class Client
             $this->fileUploadUrl,[
                 'multipart'=>[
                     'name'=>'archive',
-                    'contents'=>fopen($file_path,'r')
+                    'contents' => fopen($file_path,'r')
                 ]
             ]
         );
@@ -99,11 +99,14 @@ class Client
         return $response->body();
     }
 
-
-
     public function getClient()
     {
-        return Http::withHeaders($this->headers);
+        return $this->httpClient;
+    }
+
+    protected function buildHttpClient()
+    {
+        $this->httpClient = Http::baseUrl(sprintf('%s/api', config('psb.base_url')))->withHeaders($this->headers);
     }
 
     protected function setHeader($type , $value)
@@ -113,16 +116,17 @@ class Client
 
     protected function withMainHeaders()
     {
-        $this->setHeader('Content-Type','application/json');
-        $this->setHeader('accept','application/json');
+        $this->httpClient->withHeaders([
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+        ]);
+
         return $this;
     }
 
     public function authenticateAs($token)
     {
-        $this->setHeader('authorization','Bearer '.$token);
+        $this->httpClient->withHeaders(['Authorization' => "Bearer $token"]);
         return $this;
     }
-
-
 }

@@ -86,8 +86,8 @@ class Validation
     protected function validateFileSize($file)
     {
         $file_size = filesize($file) / 1024;
-        if ($file_size > env('MAX_FILE_SIZE')) {
-            $this->errors[] = 'File execeeds the upload limit';
+        if ($file_size > $maxFileSize = config('psb.max_file_size')) {
+            $this->errors[] = sprintf('File execeeds the upload limit of %s', $maxFileSize);
             return false;
         }
         return true;
