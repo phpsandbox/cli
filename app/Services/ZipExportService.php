@@ -117,7 +117,7 @@ class ZipExportService implements ZipExportContract
     {
       if (!is_dir($this->fileStoragePath))
       {
-          mkdir($this->fileStoragePath);
+          mkdir($this->fileStoragePath, 0777, true);
       }
       return implode(DIRECTORY_SEPARATOR,[$this->fileStoragePath,$path]);
     }
