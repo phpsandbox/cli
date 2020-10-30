@@ -109,7 +109,7 @@ class ZipExportService implements ZipExportContract
      */
     protected function getZipPath()
     {
-        return getcwd().DIRECTORY_SEPARATOR.'sample/matrix';
+        return getcwd();
     }
 
     /**
