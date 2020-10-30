@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Contracts\BrowserContract;
 use App\Contracts\ZipExportContract;
 use App\Http\Client;
+use Illuminate\Support\Facades\File;
 use PhpZip\Exception\ZipException;
 use PhpZip\Util\Iterator\IgnoreFilesRecursiveFilterIterator;
 use PhpZip\ZipFile;
@@ -89,15 +90,9 @@ class ZipExportService implements ZipExportContract
     }
 
 
-
     public function cleanUp()
     {
-        $files = glob(config('psb.files_storage').DIRECTORY_SEPARATOR."*");
-
-        foreach($files as $file)
-        {
-            unlink($file);
-        }
+        File::cleanDirectory(config('psb.files_storage'));
     }
 
 
@@ -137,8 +132,8 @@ class ZipExportService implements ZipExportContract
         //i am hard coding this here for now, would change it once i see bosun's code and how to set a common
         //base url for all urls
         return $token == ''
-            ? sprintf('https://internal.phpsandbox.io/n/%s?accessToken=%s', $details['unique_id'], $details['settings']['accessToken'])
-            : sprintf('https://internal.phpsandbox.io/n/%s', $details['unique_id']);
+            ? sprintf('%s/n/%s?accessToken=%s', config('psb.base_url'), $details['unique_id'], $details['settings']['accessToken'])
+            : sprintf('%s/n/%s', config('psb.base_url'), $details['unique_id']);
     }
 
     public function openNotebook(array $details, $token)
