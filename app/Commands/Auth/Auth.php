@@ -61,29 +61,22 @@ class Auth extends Command
     protected function triggerNewLogin(AuthenticationContract  $auth)
     {
 
-        if ($this->option('access') != null)
-        {
+        if ($this->option('access') != null){
             $access_token = $this->option('access');
         }
-        else
-        {
+        else {
             $auth->launchBrowser();
             $access_token = $this->ask('enter the authentication token generated from the browser');
 
         }
 
-        try
-       {
+        try {
            $token = $auth->fetchCliToken($access_token);
            $auth->storeNewToken($token);
-       }
-       catch (ConnectionException $e)
-       {
+       } catch (ConnectionException $e) {
            $this->couldNotConnect();
            exit;
-       }
-       catch (\Illuminate\Http\Client\RequestException $e)
-       {
+       } catch (\Illuminate\Http\Client\RequestException $e) {
            $this->invalidAccessToken();
            exit;
        }

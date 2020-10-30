@@ -132,16 +132,18 @@ class ZipExportService implements ZipExportContract
         return $this->client->uploadCompressedFile($filepath, $token);
     }
 
-    protected function getNotebookUrl(array $details)
+    protected function getNotebookUrl(array $details, $token)
     {
         //i am hard coding this here for now, would change it once i see bosun's code and how to set a common
         //base url for all urls
-        return "https://internal.phpsandbox.io/n/".$details['unique_id'];
+        return $token == ''
+            ? sprintf('https://internal.phpsandbox.io/n/%s?accessToken=%s', $details['unique_id'], $details['settings']['accessToken'])
+            : sprintf('https://internal.phpsandbox.io/n/%s', $details['unique_id']);
     }
 
-    public function openNotebook(array $details)
+    public function openNotebook(array $details, $token)
     {
         $browser = app()->make(BrowserContract::class);
-        $browser->open($this->getNotebookUrl($details));
+        $browser->open($this->getNotebookUrl($details, $token));
     }
 }

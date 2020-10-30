@@ -66,8 +66,7 @@ class Client
     public function fetchCliToken($access_token)
     {
             $response = $this->withMainHeaders()->getClient()->post($this->fetchCliTokenUrl,['code'=>$access_token]);
-            $response->throw();
-            return ($response->body());
+            return $response->throw()->json()['token'];
     }
 
     public function getAuthenticatedUser($token)
