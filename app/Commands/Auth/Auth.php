@@ -34,7 +34,7 @@ class Auth extends Command
     public function handle(AuthenticationContract  $auth)
     {
         $this->task("Authenticating", function() use($auth) {
-            if(!$auth->check())
+            if(!$auth->check() || $this->option('access') != null)
             {
                $this->triggerNewLogin($auth);
             }

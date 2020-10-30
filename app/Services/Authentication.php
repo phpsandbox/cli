@@ -198,6 +198,11 @@ class Authentication implements AuthenticationContract
         }
     }
 
+    /**
+     * logs out autheticated user
+     *
+     * @return bool
+     */
     public function logout()
     {
         return unlink($this->tokenStorage);
