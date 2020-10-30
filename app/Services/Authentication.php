@@ -86,14 +86,6 @@ class Authentication implements AuthenticationContract
     }
 
     /**
-     * @param $access_token
-     */
-    public function retrieveCliToken($access_token)
-    {
-        $this->client;
-    }
-
-    /**
      * open users browser to retrieve token
      */
     public function  launchBrowser()
@@ -124,7 +116,7 @@ class Authentication implements AuthenticationContract
      */
     public function fetchCliToken($access_token)
     {
-        return json_decode($this->client->fetchCliToken($access_token),true)['token'];
+        return $this->client->fetchCliToken($access_token);
     }
 
     /**
@@ -199,6 +191,20 @@ class Authentication implements AuthenticationContract
      */
     public function retrieveToken(): string
     {
-        return File::get($this->tokenStorage) ?: '';
+        try {
+            return File::get($this->tokenStorage);
+        } catch(FileNotFoundException $e){
+            return false;
+        }
+    }
+
+    /**
+     * logs out autheticated user
+     *
+     * @return bool
+     */
+    public function logout()
+    {
+        return unlink($this->tokenStorage);
     }
 }

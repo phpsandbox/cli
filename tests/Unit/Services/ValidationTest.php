@@ -1,6 +1,7 @@
 <?php
 
 
+use App\Services\Validation;
 use org\bovigo\vfs\content\LargeFileContent;
 use org\bovigo\vfs\vfsStream;
 use Tests\TestCase;
@@ -13,13 +14,13 @@ class ValidationTest extends TestCase
 
 
     /**
-     * @var \App\Services\Validation
+     * @var Validation
      */
     private $validator;
 
     public function setUp(): void
     {
-        $this->validator = new \App\Services\Validation();
+        $this->validator = new Validation();
         $fileStorage = env('FILES_STORAGE');
 
     }

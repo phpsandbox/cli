@@ -28,13 +28,14 @@ class Auth extends Command
     /**
      * Execute the console command.
      *
+     * @param AuthenticationContract $auth
      * @return mixed
      */
     public function handle(AuthenticationContract  $auth)
     {
         $this->task("Authenticating", function() use($auth) {
-            if(! $auth->check()) {
-                $this->triggerNewLogin($auth);
+            if(! $auth->check() || $this->option('access') != null) {
+               $this->triggerNewLogin($auth);
             }
 
             $token = $auth->retrieveToken();
@@ -45,15 +46,14 @@ class Auth extends Command
 
     protected function tokenValidation(AuthenticationContract  $auth,$token)
     {
-        try
-        {
+        try {
             $auth->tokenIsValid($token)
                 ? $this->info('Authentication was successful.')
                 : $this->error('Token could not be validated.');
-        }
-        catch(ConnectionException $e)
-        {
+        } catch(ConnectionException $e) {
             return $this->couldNotConnect();
+        }catch (\Illuminate\Http\Client\RequestException $e){
+            return $this->invalidAccessToken();
         }
     }
 

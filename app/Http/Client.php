@@ -68,9 +68,8 @@ class Client
 
     public function fetchCliToken($access_token)
     {
-            $response = $this->withMainHeaders()->getClient()->post($this->fetchCliTokenUrl, ['code' => $access_token]);
-            $response->throw();
-            return ($response->body());
+            $response = $this->withMainHeaders()->getClient()->post($this->fetchCliTokenUrl, ['code'=> $access_token]);
+            return $response->throw()->json()['token'];
     }
 
     public function getAuthenticatedUser($token)
@@ -86,17 +85,9 @@ class Client
             ? $this->authenticateAs($token)->getClient()
             : $this->getClient();
 
-        $response = $client->asForm()->post(
-            $this->fileUploadUrl,[
-                'multipart'=>[
-                    'name'=>'archive',
-                    'contents' => fopen($file_path,'r')
-                ]
-            ]
-        );
-
-        $response->throw();
-        return $response->body();
+        $response = $client->attach('archive', fopen($file_path, 'r'))
+                            ->post($this->fileUploadUrl);
+        return $response->throw()->json();
     }
 
     public function getClient()
