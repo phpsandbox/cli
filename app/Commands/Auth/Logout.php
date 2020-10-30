@@ -1,39 +1,41 @@
 <?php
 
-namespace App\Commands;
+namespace App\Commands\Auth;
 
 use App\Contracts\AuthenticationContract;
-use App\Contracts\ZipExportContract;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 
-class ZipExport extends Command
+class Logout extends Command
 {
     /**
      * The signature of the command.
      *
      * @var string
      */
-    protected $signature = 'export';
+    protected $signature = 'logout';
 
     /**
      * The description of the command.
      *
      * @var string
      */
-    protected $description = 'Export the current working directory to phpsandbox';
+    protected $description = 'Logout authenticated user';
 
     /**
      * Execute the console command.
      *
      * @return mixed
      */
-    public function handle(ZipExportContract $zip , AuthenticationContract $auth)
+    public function handle(AuthenticationContract $auth)
     {
-        if (!$auth->check()){
-            $response = $this->call('login');
-        };
-        $zip->export();
+        if (!$auth->check()) {
+            $this->info('no authenticated user found');
+            return true;
+        }
+        if($auth->logout()){
+            $this->info('user logged out successfully!');
+        }
 
     }
 

@@ -4,3 +4,10 @@
 /.vagrant
 /sample
 .phpunit.result.cache
+.env
+*.zip
+/app/config/.phpsandbox
+token
+*.phpsandbox
+
+eeee
