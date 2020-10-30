@@ -116,7 +116,7 @@ class Authentication implements AuthenticationContract
      */
     public function fetchCliToken($access_token)
     {
-        return json_decode($this->client->fetchCliToken($access_token),true)['token'];
+        return $this->client->fetchCliToken($access_token);
     }
 
     /**
@@ -191,13 +191,6 @@ class Authentication implements AuthenticationContract
      */
     public function retrieveToken(): string
     {
-        return file_get_contents($this->tokenStorage);
-        try {
-            return File::get($this->tokenStorage);
-        }catch (FileNotFoundException $e)
-        {
-            return '';
-        }
-
+        return $this->tokenFileExist() ?: '';
     }
 }

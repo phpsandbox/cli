@@ -6,8 +6,10 @@ use App\Contracts\AuthenticationContract;
 use App\Contracts\ZipExportContract;
 use App\Services\Validation;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Http\Client\RequestException;
 use LaravelZero\Framework\Commands\Command;
 use PhpZip\Exception\ZipException;
+use function foo\func;
 
 class ZipExport extends Command
 {
@@ -43,23 +45,40 @@ class ZipExport extends Command
             ? $auth->setGuest()
             : $this->call('login');
         }
-        //run pre-compressing validation
+        $this->task('exporting',function() use ($zip, $validate, $auth){
+            if(!$validate->validate(getcwd(),['hasComposer','composerIsValid'])){
+                return $this->validationError($validate->errors());
+            }
+            try {
+                $file_name = $zip->compress();
+            }
+            catch (ZipException $e){
+                $this->error("directory could not be compressed");
+                return false;
+            }
 
-        if(!$validate->validate(getcwd(),['hasComposer','composerIsValid'])){
-            return $this->validationError($validate->errors());
-        }
-        try {
-            $file_name = $zip->compress();
-        }
-        catch (ZipException $e){
-            return $this->error("directory could not be compressed");
-        }
+            if (!$validate->validate(getcwd(),["size,$file_name"])) {
+                $this->validationError($validate->errors());
+                return false;
+            }  try {
+                $token =  $auth->retrieveToken();
+                $notebook_details = $zip->upload($file_name, $token);
 
-        if(!$validate->validate(getcwd(),["size,$file_name"]))
-        {
-            return $this->validationError($validate->errors());
-        }
-        var_dump($zip->upload($file_name, $auth->retrieveToken()));
+                $zip->openNotebook($notebook_details, $token);
+            }
+            catch (RequestException $e)
+            {
+                if ($e->getCode() == 422){
+                    return $this->error($e->getMessage());
+                }
+
+            }
+        });
+
+
+
+
+
 
        // $zip->cleanUp();
 
