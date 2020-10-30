@@ -36,11 +36,22 @@ class AuthenticationTest  extends TestCase
         $root = vfsStream::create($structure,$root)->url();
         config(['psb.token_storage'=>$root.'/token']);
         $auth = new Authentication();
-       // dd(file_get_contents($root.'/token'));
-       // dd(config('psb.token_storage'));
-       // dd($root);
-       // dd(is_dir($root."/token/g"));
-
         $this->assertTrue($auth->retrieveToken() == 'token');
+    }
+
+    /**
+     * @test
+     */
+    public function test_logout()
+    {
+        $structure = [
+            'token'=>'token'
+        ];
+        $root = vfsStream::setup('home',null);
+        $token_storage = vfsStream::create($structure,$root)->url();
+        config(['psb.token_storage'=>$token_storage.'/token']);
+        $auth = new Authentication();
+        $auth->logout();
+        $this->assertFalse($root->hasChild('token'));
     }
 }
