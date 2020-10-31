@@ -40,11 +40,11 @@ class ZipExportCommand extends Command
         Validation $validate
     ) {
         if (!$auth->check()) {
-           $this->confirm("you are not authenticated , continue as guest")
+           $this->confirm("You are not authenticated, continue as guest.")
             ? $auth->setGuest()
             : $this->call('login');
         }
-        $this->task('exporting',function() use ($zip, $validate, $auth){
+        $this->task('Exporting your project to PHPsandbox',function () use ($zip, $validate, $auth){
             if(!$validate->validate(getcwd(),['hasComposer','composerIsValid'])){
                 return $this->validationError($validate->errors());
             }
@@ -52,7 +52,7 @@ class ZipExportCommand extends Command
             try {
                 $file_name = $zip->compress();
             } catch (ZipException $e){
-                $this->error("directory could not be compressed");
+                $this->error("Directory could not be compressed.");
                 return false;
             }
 
