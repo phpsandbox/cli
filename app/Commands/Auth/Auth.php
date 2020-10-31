@@ -16,7 +16,7 @@ class Auth extends Command
      * @var string
      */
 
-    protected $signature = 'login  {--access=}';
+    protected $signature = 'login  {--token=}';
 
     /**
      * The description of the command.
