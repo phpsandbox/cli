@@ -34,7 +34,7 @@ class Auth extends Command
     public function handle(AuthenticationContract  $auth)
     {
         $this->task("Authenticating", function() use($auth) {
-            if(! $auth->check() || $this->option('access') != null) {
+            if(! $auth->check() || $this->option('token') != null) {
                $this->triggerNewLogin($auth);
             }
 
@@ -59,8 +59,8 @@ class Auth extends Command
 
     protected function triggerNewLogin(AuthenticationContract  $auth)
     {
-        if ($this->option('access') != null) {
-            $access_token = $this->option('access');
+        if ($this->option('token') != null) {
+            $access_token = $this->option('token');
         } else {
             $auth->launchBrowser();
             $access_token = $this->ask('enter the authentication token generated from the browser');
