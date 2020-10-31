@@ -55,7 +55,7 @@ class Client
 
     protected function setFetchCliTokenUrl()
     {
-        $this->fetchCliTokenUrl = 'login/cli';
+        $this->fetchCliTokenUrl = 'cli/login';
         return $this;
     }
 
