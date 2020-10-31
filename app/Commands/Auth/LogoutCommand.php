@@ -30,11 +30,11 @@ class LogoutCommand extends Command
     public function handle(AuthenticationContract $auth)
     {
         if (!$auth->check()) {
-            $this->info('no authenticated user found');
+            $this->info('No authenticated user found');
             return true;
         }
         if($auth->logout()){
-            $this->info('user logged out successfully!');
+            $this->info('User logged out successfully!');
         }
 
     }
