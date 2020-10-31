@@ -6,7 +6,7 @@ use App\Contracts\AuthenticationContract;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 
-class Logout extends Command
+class LogoutCommand extends Command
 {
     /**
      * The signature of the command.

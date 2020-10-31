@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Commands\Auth\Auth;
+use App\Commands\Auth\LoginCommand;
 use App\Contracts\AuthenticationContract;
 use App\Contracts\BrowserContract;
 use App\Http\Client;
@@ -94,21 +94,6 @@ class Authentication implements AuthenticationContract
         $browser->open($this->tokenUrl);
     }
 
-    /**
-     * Setup new token
-     *
-     * @param Auth $command
-     */
-    public function setUpNewToken(Auth $command)
-    {
-        $this->launchBrowser();
-        $access_token = $command->ask('enter the authentication token generated from the browser');
-        $cliToken = $this->fetchCliToken($access_token);
-        if(!is_bool($cliToken)){
-            return   $this->storeNewToken($cliToken);
-        }
-        return false;
-    }
 
     /**
      * @param $access_token

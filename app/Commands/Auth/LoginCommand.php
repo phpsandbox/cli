@@ -8,7 +8,7 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use LaravelZero\Framework\Commands\Command;
 
-class Auth extends Command
+class LoginCommand extends Command
 {
     /**
      * The signature of the command.

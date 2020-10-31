@@ -2,7 +2,6 @@
 
 namespace App\Contracts;
 
-use App\Commands\Auth\Auth;
 
 interface AuthenticationContract
 {
@@ -12,5 +11,4 @@ interface AuthenticationContract
 
     public function retrieveToken(): string;
 
-    public function setUpNewToken(Auth $command);
 }
