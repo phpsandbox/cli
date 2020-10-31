@@ -75,8 +75,7 @@ class Client
     public function getAuthenticatedUser($token)
     {
         $response = $this->withMainHeaders()->authenticateAs($token)->getClient()->get($this->fetchAuthUserUrl);
-        $response->throw();
-        return $response->status();
+        return $response->throw()->status();
     }
 
     public function uploadCompressedFile($file_path, $token)

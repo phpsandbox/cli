@@ -118,15 +118,6 @@ class Authentication implements AuthenticationContract
     }
 
     /**
-     *
-     */
-    public function setGuest()
-    {
-        $this->isGuest = true;
-    }
-
-
-    /**
      * Checks if a user is authenticated
      * @return bool
      */
@@ -135,11 +126,9 @@ class Authentication implements AuthenticationContract
         if (! $this->tokenFileExist()) {
             return false;
         }
-
         if (! $this->tokenIsValid(File::get($this->tokenStorage))){
             return false;
         }
-
         return true;
     }
 
