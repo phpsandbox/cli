@@ -89,7 +89,7 @@ class ValidationTest extends TestCase
     {
         $invalid_structure = [
             'app'=>[
-                'sample.php'=> 'some sample text'
+                'sample.php' => 'some sample text'
             ]
         ];
 

@@ -38,7 +38,7 @@ class AuthenticationTest  extends TestCase
         ];
         $root = vfsStream::setup('home',null);
         $root = vfsStream::create($structure,$root)->url();
-        config(['psb.token_storage'=>$root.'/token']);
+        config(['psb.token_storage' => $root.'/token']);
         $auth = new Authentication();
         $this->assertTrue($auth->retrieveToken() == 'token');
     }
@@ -67,7 +67,7 @@ class AuthenticationTest  extends TestCase
         /* test valid token */
         $base_url = config('psb.base_url');
         Http::fake([
-            sprintf('%s/api/user',$base_url)=>Http::response([''],200)
+            sprintf('%s/api/user',$base_url) => Http::response([''],200)
         ]);
         $auth = new Authentication();
         $this->assertTrue($auth->tokenIsValid('rightToken'));
@@ -93,7 +93,7 @@ class AuthenticationTest  extends TestCase
     {
         $structure = [];
         $root = vfsStream::setup('root', null, $structure);
-        config(['psb.token_storage'=>$root->url().'/token']);
+        config(['psb.token_storage' => $root->url().'/token']);
         $auth = new Authentication();
         $auth->storeNewToken('token');
         $this->assertTrue($root->hasChild('token'));

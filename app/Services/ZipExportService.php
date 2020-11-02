@@ -62,6 +62,22 @@ class ZipExportService implements ZipExportContract
         $this->fileStoragePath = config('psb.files_storage');
     }
 
+    public function countFiles($path)
+    {
+        $size = 0;
+        $ignore = ['vendor','.','.git','..','node_modules'];
+        $files = scandir($path);
+        foreach($files as $t) {
+            if(in_array($t, $ignore)) continue;
+            if (is_dir(rtrim($path, '/') . '/' . $t)) {
+                $size += $this->countFiles(rtrim($path, '/') . '/' . $t);
+            } else {
+                $size++;
+            }
+        }
+        return $size;
+    }
+
     /**
      *  Handle the export process
      */
