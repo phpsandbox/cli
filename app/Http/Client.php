@@ -1,6 +1,9 @@
 <?php
 
 namespace App\Http;
+use Illuminate\Config\Repository;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
 class Client
@@ -19,13 +22,13 @@ class Client
 
     protected $fetchAuthUserUrl;
     /**
-     * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
+     * @var Repository|Application|mixed
      */
 
     private $fileUploadUrl;
 
     /**
-     * @var \Illuminate\Http\Client\PendingRequest
+     * @var PendingRequest
      */
     private $httpClient;
 

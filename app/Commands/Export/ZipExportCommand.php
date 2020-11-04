@@ -48,41 +48,7 @@ class ZipExportCommand extends Command
             ? $this->info('Authenticated as guest')
             : $this->call('login');
         }
-    /*    $this->task('Exporting your project to PHPsandbox',function () use ($zip, $validate, $auth){
 
-            $this->task('running pre-compression validation',function() use ($validate){
-                if(!$validate->validate(getcwd(),['hasComposer','composerIsValid'])){
-                    $this->error(implode("\n",$validate->errors()));
-                    return false;
-                }
-                return true;
-
-            });
-
-            try {
-                $file_name = $zip->compress();
-            } catch (ZipException $e){
-                $this->error("Directory could not be compressed.");
-                return false;
-            }
-
-            if (!$validate->validate(getcwd(),["size,$file_name"])) {
-                $this->validationError($validate->errors());
-                return false;
-            }  try {
-                $token =  $auth->retrieveToken();
-                $notebook_details = $zip->upload($file_name, $token);
-
-                $zip->openNotebook($notebook_details, $token);
-            } catch (RequestException $e) {
-                if ($e->getCode() == 422){
-                    $this->error($e->getMessage());
-                }
-            }
-
-            $zip->cleanUp();
-        });
-        */
 
 
         $this->multipleTask(
@@ -175,7 +141,7 @@ class ZipExportCommand extends Command
              exit(1);
             }
         }
-        $this->info(sprintf('%s :completed',$title));
+        $this->info(sprintf('%s : completed',$title));
     }
 
     /**

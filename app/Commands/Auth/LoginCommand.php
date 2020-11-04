@@ -52,7 +52,7 @@ class LoginCommand extends Command
                 : $this->error('Token could not be validated.');
         } catch(ConnectionException $e) {
             return $this->couldNotConnect();
-        }catch (\Illuminate\Http\Client\RequestException $e){
+        }catch (RequestException $e){
             return $this->invalidAccessToken();
         }
     }
@@ -63,7 +63,7 @@ class LoginCommand extends Command
             $access_token = $this->option('token');
         } else {
             $auth->launchBrowser();
-            $access_token = $this->ask('enter the authentication token generated from the browser');
+            $access_token = $this->ask('Enter the authentication token generated from the browser');
         }
 
         try {
