@@ -22,10 +22,11 @@
         "guzzlehttp/guzzle": "^6.5.5",
         "illuminate/http": "^8.0",
         "laminas/laminas-text": "^2.7",
-        "laravel-zero/framework": "^8.0",
-        "nelexa/zip": "^3.3"
+        "nelexa/zip": "^3.3",
+        "padraic/phar-updater": "^1.0.6"
     },
     "require-dev": {
+        "laravel-zero/framework": "^8.0",
         "mikey179/vfsstream": "^1.6",
         "mockery/mockery": "^1.4.2",
         "phpunit/phpunit": "^9.3"
@@ -47,5 +48,5 @@
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
-    "bin": ["psb"]
+    "bin": ["builds/psb"]
 }
