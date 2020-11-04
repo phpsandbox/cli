@@ -6,13 +6,9 @@ namespace Tests\Unit\Services;
 
 use App\Contracts\AuthenticationContract;
 use App\Services\Authentication;
-use GuzzleHttp\Exception\RequestException;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\File;
+use App\Services\BrowserService;
 use Illuminate\Support\Facades\Http;
 use org\bovigo\vfs\vfsStream;
-use org\bovigo\vfs\vfsStreamFile;
 use Tests\TestCase;
 
 class AuthenticationTest  extends TestCase
@@ -22,10 +18,7 @@ class AuthenticationTest  extends TestCase
      */
     private $auth;
 
-    public function setUp(): void
-    {
-       $this->auth =  $this->createApplication()->make(AuthenticationContract::class);
-    }
+
 
 
     /**
@@ -84,10 +77,6 @@ class AuthenticationTest  extends TestCase
         $this->assertFalse($auth->tokenIsValid('wrongToken'));
     }
 
-    public function test_check_user_is_logged_in()
-    {
-       // $this->mock
-    }
 
     public function test_store_new_token()
     {
@@ -102,7 +91,11 @@ class AuthenticationTest  extends TestCase
 
     public function test_launch_browser()
     {
-
+        $this->partialMock(BrowserService::class,function($mock){
+           $mock->shouldReceive('open')->once();
+        });
+        $auth = new Authentication();
+        $auth->launchBrowser();
     }
 
 
