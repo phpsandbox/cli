@@ -3,6 +3,7 @@
 /.vscode
 /.vagrant
 /sample
+/builds
 .phpunit.result.cache
 .env
 *.zip

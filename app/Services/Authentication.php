@@ -8,6 +8,7 @@ use App\Contracts\BrowserContract;
 use App\Http\Client;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\File;
 
 
@@ -126,10 +127,12 @@ class Authentication implements AuthenticationContract
         if (! $this->tokenFileExist()) {
             return false;
         }
-        if (! $this->tokenIsValid(File::get($this->tokenStorage))){
+        try{
+            return $this->tokenIsValid(File::get($this->tokenStorage));
+        } catch(RequestException $e){
             return false;
         }
-        return true;
+
     }
 
     /**

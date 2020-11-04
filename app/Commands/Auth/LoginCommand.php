@@ -34,13 +34,13 @@ class LoginCommand extends Command
     public function handle(AuthenticationContract  $auth)
     {
         $this->task("Authenticating", function() use($auth) {
-            if(! $auth->check() || $this->option('token') != null) {
+            if(! $auth->check()) {
                $this->triggerNewLogin($auth);
+                $token = $auth->retrieveToken();
+                return $this->tokenValidation($auth,$token);
             }
-
-            $token = $auth->retrieveToken();
-
-            $this->tokenValidation($auth,$token);
+            $this->info('Already authenticated');
+            return true;
         });
     }
 
@@ -50,11 +50,19 @@ class LoginCommand extends Command
             $auth->tokenIsValid($token)
                 ? $this->info('Authentication was successful.')
                 : $this->error('Token could not be validated.');
+            return true;
         } catch(ConnectionException $e) {
-            return $this->couldNotConnect();
-        }catch (RequestException $e){
-            return $this->invalidAccessToken();
+            $this->couldNotConnect();
+        } catch (RequestException $e){
+           if($e->getCode() == 422){
+               $this->invalidAccessToken();
+        } else{
+
+            $this->error($e->getMessage());
+            }
         }
+        return false;
+
     }
 
     protected function triggerNewLogin(AuthenticationContract  $auth)
