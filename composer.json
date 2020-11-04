@@ -23,10 +23,10 @@
         "illuminate/http": "^8.0",
         "laminas/laminas-text": "^2.7",
         "laravel-zero/framework": "^8.0",
-        "mikey179/vfsstream": "^1.6",
         "nelexa/zip": "^3.3"
     },
     "require-dev": {
+        "mikey179/vfsstream": "^1.6",
         "mockery/mockery": "^1.4.2",
         "phpunit/phpunit": "^9.3"
     },
