@@ -145,8 +145,6 @@ class ZipExportService implements ZipExportContract
 
     protected function getNotebookUrl(array $details, $token)
     {
-        //i am hard coding this here for now, would change it once i see bosun's code and how to set a common
-        //base url for all urls
         return $token == ''
             ? sprintf('%s/n/%s?accessToken=%s', config('psb.base_url'), $details['unique_id'], $details['settings']['accessToken'])
             : sprintf('%s/n/%s', config('psb.base_url'), $details['unique_id']);

@@ -40,5 +40,5 @@ return [
     |maximum file upload size
     |
     */
-    'max_file_size' => env('MAX_FILE_SIZE',1000),
+    'max_file_size' => env('MAX_FILE_SIZE',10240),
 ];

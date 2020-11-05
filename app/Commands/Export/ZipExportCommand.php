@@ -57,7 +57,7 @@ class ZipExportCommand extends Command
              'Running precompression validations',
              'Compressing files',
              'Running pre upload validation',
-             'Uploading notbook',
+             'Uploading notebook',
              'Cleaning up'
             ],
             function () use ($validate){
@@ -88,10 +88,10 @@ class ZipExportCommand extends Command
                     $token =  $auth->retrieveToken();
                     $notebook_details = $zip->upload($this->file_name, $token);
                     $zip->openNotebook($notebook_details, $token);
+                    return true;
                 } catch (RequestException $e) {
-                    if ($e->getCode() == 422){
-                        $this->error($e->getMessage());
-                    }
+                    $this->error($e->getMessage());
+                    return false;
                 }
             },
             function() use ($zip){
