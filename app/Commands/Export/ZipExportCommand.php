@@ -86,13 +86,14 @@ class ZipExportCommand extends Command
                     $token =  $auth->retrieveToken();
                     $notebook_details = $zip->upload($this->file_name, $token);
                     $notebook_url = $zip->openNotebook($notebook_details, $token);
-                    $this->info(sprintf('your notebook has been provisioned at %s', $notebook_url));
+                    $this->info(sprintf("\n your notebook has been provisioned at %s", $notebook_url));
                     return true;
                 } catch (RequestException $e) {
                     $this->error($e->getMessage());
                 } catch (ConnectionException $e){
                     $this->couldNotConnect();
                 }
+                $zip->cleanUp();
                 return false;
             },
             function() use ($zip){

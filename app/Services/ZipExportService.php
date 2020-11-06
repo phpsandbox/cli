@@ -59,7 +59,7 @@ class ZipExportService implements ZipExportContract
     public function countFiles($path)
     {
         $size = 0;
-        $ignore = ['vendor','.','.git','..','node_modules'];
+        $ignore = ['vendor','.','.git','..','node_modules','.idea','.phpintel'];
         $files = scandir($path);
 
         foreach($files as $t) {

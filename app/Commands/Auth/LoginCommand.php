@@ -80,7 +80,6 @@ class LoginCommand extends Command
             $this->info('You would be redirected to your browser to obtain your access token.');
             $auth->launchBrowser();
             $access_token = $this->ask('Enter the authentication token generated from the browser');
-
         }
 
         try {

@@ -28,10 +28,9 @@ return [
 
     'files_storage' => implode(DIRECTORY_SEPARATOR
             ,[$_SERVER['HOME'] ?? $_SERVER['USERPROFILE']
-                , 'files'
                 , '.phpsandbox'
-
-            ]),
+                , 'files'
+        ]),
     /*
     |--------------------------------------------------------------------------
     | Retrieve authenticated user

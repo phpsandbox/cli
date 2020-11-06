@@ -13,17 +13,7 @@ use Tests\TestCase;
 
 class AuthenticationTest  extends TestCase
 {
-    /**
-     * @var mixed
-     */
-    private $auth;
 
-
-
-
-    /**
-     * @test
-     */
     public function test_retrieve_token()
     {
         $structure = [
@@ -52,9 +42,7 @@ class AuthenticationTest  extends TestCase
         $this->assertFalse($root->hasChild('token'));
     }
 
-    /**
-     * @test
-     */
+
     public function test_valid_token_is_valid()
     {
         /* test valid token */
@@ -97,6 +85,4 @@ class AuthenticationTest  extends TestCase
         $auth = new Authentication();
         $auth->launchBrowser();
     }
-
-
 }
