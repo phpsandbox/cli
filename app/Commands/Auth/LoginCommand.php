@@ -92,6 +92,7 @@ class LoginCommand extends Command
             if ($e->getCode() === 422) {
                 $this->invalidAccessToken();
             } else {
+                throw $e;
                 $this->errorOccured();
             }
             exit;
