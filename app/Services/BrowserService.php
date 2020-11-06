@@ -8,9 +8,9 @@ class BrowserService
     /**
      * Opens User Default Browser
      *
-     * @param $authUri
+     * @param $url
      */
-    public function  open($authUri)
+    public function  open($url): void
     {
         switch (PHP_OS) {
             case 'Darwin':
@@ -23,6 +23,6 @@ class BrowserService
                 $opener = 'xdg-open';
         }
 
-        exec(sprintf('%s %s', $opener, $authUri));
+        exec(sprintf('%s %s', $opener, $url));
     }
 }

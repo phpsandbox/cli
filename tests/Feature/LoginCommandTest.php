@@ -29,6 +29,19 @@ class LoginCommandTest  extends TestCase
             ->assertExitCode(0);
     }
 
+    public function test_login_works_if_access_token_option_is_provided_and_browser_is_not_opened(){
+        $this->mock(Authentication::class, function ($mock) {
+            $mock->shouldReceive('check')->andReturn(false);
+            $mock->shouldReceive('fetchCliToken')->once()->andReturn('randomToken');
+            $mock->shouldReceive('retrieveToken')->once()->andReturn('rightToken');
+            $mock->shouldReceive('tokenIsValid')->once()->andReturn(true);
+            $mock->shouldReceive('storeNewToken')->once();
+        });
+
+        $this->artisan('login --token=sometoken')
+            ->assertExitCode(0);
+    }
+
     public function test_login_fails_if_token_is_wrong()
     {
         $this->partialMock(AuthenticationContract::class, function ($mock) {

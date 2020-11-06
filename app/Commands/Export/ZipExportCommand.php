@@ -7,8 +7,8 @@ use App\Contracts\AuthenticationContract;
 use App\Contracts\ZipExportContract;
 use App\Services\Validation;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
-use Illuminate\Support\Facades\File;
 use LaravelZero\Framework\Commands\Command;
 use PhpZip\Exception\ZipException;
 
@@ -49,8 +49,6 @@ class ZipExportCommand extends Command
             : $this->call('login');
         }
 
-
-
         $this->multipleTask(
             'Exporting notebook to phpsandbox',
             [
@@ -87,15 +85,19 @@ class ZipExportCommand extends Command
                 try {
                     $token =  $auth->retrieveToken();
                     $notebook_details = $zip->upload($this->file_name, $token);
-                    $zip->openNotebook($notebook_details, $token);
+                    $notebook_url = $zip->openNotebook($notebook_details, $token);
+                    $this->info(sprintf('your notebook has been provisioned at %s', $notebook_url));
                     return true;
                 } catch (RequestException $e) {
                     $this->error($e->getMessage());
-                    return false;
+                } catch (ConnectionException $e){
+                    $this->couldNotConnect();
                 }
+                return false;
             },
             function() use ($zip){
                 $zip->cleanUp();
+                return true;
             }
         );
 
@@ -104,6 +106,11 @@ class ZipExportCommand extends Command
     protected function validationError(array $errors)
     {
          $this->error(implode("\n",$errors));
+    }
+
+    protected function couldNotConnect()
+    {
+        $this->error('Could not establish a connection. Kindly check that your computer is connected to the internet.');
     }
 
     protected function displayDetails(ZipExportContract $zip)
