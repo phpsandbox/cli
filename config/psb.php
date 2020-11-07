@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'base_url' => $baseUrl = env('BASE_URL', 'http://phpsandbox.test'),
+    'base_url' => $baseUrl = env('BASE_URL', 'http://phpsandbox.io'),
 
     /*
      |--------------------------------------------------------------------------
