@@ -6,8 +6,6 @@ namespace Tests\Feature;
 
 use App\Contracts\AuthenticationContract;
 use App\Services\Authentication;
-use Mockery;
-use org\bovigo\vfs\vfsStream;
 use Tests\TestCase;
 
 class LoginCommandTest  extends TestCase

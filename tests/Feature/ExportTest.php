@@ -4,14 +4,12 @@
 namespace Tests\Feature;
 
 
-use App\Commands\Auth\LoginCommand;
 use App\Contracts\AuthenticationContract;
 use App\Contracts\ZipExportContract;
 use App\Services\Validation;
-use Mockery;
 use Tests\TestCase;
 
-class ZipExportTest   extends TestCase
+class ExportTest   extends TestCase
 {
     /**
      * test will export file of unauthenticated user

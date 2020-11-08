@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Tests\Unit\Services;
-
 
 use App\Contracts\ZipExportContract;
 use org\bovigo\vfs\vfsStream;
@@ -30,6 +28,5 @@ class ZipExportTest  extends TestCase
 
     public function test_zip_creates_file_after_compression()
     {
-
     }
 }

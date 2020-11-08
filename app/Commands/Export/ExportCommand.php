@@ -12,7 +12,7 @@ use Illuminate\Http\Client\RequestException;
 use LaravelZero\Framework\Commands\Command;
 use PhpZip\Exception\ZipException;
 
-class ZipExportCommand extends Command
+class ExportCommand extends Command
 {
     /**
      * The signature of the command.

@@ -1,12 +1,8 @@
 <?php
 
-
 namespace Tests\Feature;
 
-
 use App\Contracts\AuthenticationContract;
-use Illuminate\Support\Facades\File;
-use org\bovigo\vfs\vfsStream;
 use Tests\TestCase;
 
 class LogoutCommandTest  extends  TestCase
