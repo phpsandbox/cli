@@ -6,7 +6,7 @@ use App\Contracts\AuthenticationContract;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 
-class Logout extends Command
+class LogoutCommand extends Command
 {
     /**
      * The signature of the command.
@@ -29,20 +29,26 @@ class Logout extends Command
      */
     public function handle(AuthenticationContract $auth)
     {
-        if (!$auth->check()) {
-            $this->info('no authenticated user found');
-            return true;
-        }
-        if($auth->logout()){
-            $this->info('user logged out successfully!');
-        }
+        $this->task('Logging out user',function() use ($auth){
+            if (!$auth->check()) {
 
+                $this->info('No authenticated user found');
+
+                return true;
+            }
+
+            $auth->logout()
+                ? $this->info('User logged out successfully')
+                : $this->error('An error occured');
+
+            return true;
+        });
     }
 
     /**
      * Define the command's schedule.
      *
-     * @param  \Illuminate\Console\Scheduling\Schedule $schedule
+     * @param Schedule $schedule
      * @return void
      */
     public function schedule(Schedule $schedule): void

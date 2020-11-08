@@ -1,6 +1,9 @@
 <?php
 
 namespace App\Http;
+use Illuminate\Config\Repository;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
 class Client
@@ -19,13 +22,13 @@ class Client
 
     protected $fetchAuthUserUrl;
     /**
-     * @var \Illuminate\Config\Repository|\Illuminate\Contracts\Foundation\Application|mixed
+     * @var Repository|Application|mixed
      */
 
     private $fileUploadUrl;
 
     /**
-     * @var \Illuminate\Http\Client\PendingRequest
+     * @var PendingRequest
      */
     private $httpClient;
 
@@ -49,7 +52,7 @@ class Client
 
     protected function setRedirectToBrowserUrl()
     {
-        $this->redirectToBrowserUrl = config('psb.token_url');
+        $this->redirectToBrowserUrl = sprintf('%s/login/cli', config('psb.base_url'));
         return $this;
     }
 
@@ -75,8 +78,7 @@ class Client
     public function getAuthenticatedUser($token)
     {
         $response = $this->withMainHeaders()->authenticateAs($token)->getClient()->get($this->fetchAuthUserUrl);
-        $response->throw();
-        return $response->status();
+        return $response->throw()->status();
     }
 
     public function uploadCompressedFile($file_path, $token)

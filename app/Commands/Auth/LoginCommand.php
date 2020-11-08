@@ -8,7 +8,7 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use LaravelZero\Framework\Commands\Command;
 
-class Auth extends Command
+class LoginCommand extends Command
 {
     /**
      * The signature of the command.
@@ -16,7 +16,7 @@ class Auth extends Command
      * @var string
      */
 
-    protected $signature = 'login  {--access=}';
+    protected $signature = 'login  {--token=}';
 
     /**
      * The description of the command.
@@ -34,13 +34,19 @@ class Auth extends Command
     public function handle(AuthenticationContract  $auth)
     {
         $this->task("Authenticating", function() use($auth) {
-            if(! $auth->check() || $this->option('access') != null) {
+
+            if(! $auth->check()) {
+
                $this->triggerNewLogin($auth);
+
+                $token = $auth->retrieveToken();
+
+                return $this->tokenValidation($auth,$token);
             }
 
-            $token = $auth->retrieveToken();
+            $this->info('Already authenticated');
 
-            $this->tokenValidation($auth,$token);
+            return true;
         });
     }
 
@@ -50,20 +56,30 @@ class Auth extends Command
             $auth->tokenIsValid($token)
                 ? $this->info('Authentication was successful.')
                 : $this->error('Token could not be validated.');
+
+            return true;
         } catch(ConnectionException $e) {
-            return $this->couldNotConnect();
-        }catch (\Illuminate\Http\Client\RequestException $e){
-            return $this->invalidAccessToken();
+            $this->couldNotConnect();
+        } catch (RequestException $e){
+           if($e->getCode() == 422){
+               $this->invalidAccessToken();
+        } else{
+               $this->error($e->getMessage());
+            }
         }
+
+        return false;
+
     }
 
     protected function triggerNewLogin(AuthenticationContract  $auth)
     {
-        if ($this->option('access') != null) {
-            $access_token = $this->option('access');
+        if ($this->option('token') != null) {
+            $access_token = $this->option('token');
         } else {
+            $this->info('You would be redirected to your browser to obtain your access token.');
             $auth->launchBrowser();
-            $access_token = $this->ask('enter the authentication token generated from the browser');
+            $access_token = $this->ask('Enter the authentication token generated from the browser');
         }
 
         try {

@@ -21,6 +21,7 @@ class ValidationTest extends TestCase
     public function setUp(): void
     {
         $this->validator = new Validation();
+        $app = $this->createApplication();
         $fileStorage = env('FILES_STORAGE');
 
     }
@@ -89,7 +90,7 @@ class ValidationTest extends TestCase
     {
         $invalid_structure = [
             'app'=>[
-                'sample.php'=> 'some sample text'
+                'sample.php' => 'some sample text'
             ]
         ];
 
@@ -118,5 +119,6 @@ class ValidationTest extends TestCase
     public function tearDown(): void
     {
         $this->validator = null;
+        $app = null;
     }
 }
