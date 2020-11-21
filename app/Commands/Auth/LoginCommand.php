@@ -2,6 +2,7 @@
 
 namespace App\Commands\Auth;
 
+use App\Commands\Concerns\ServeReadableHttpResponse;
 use App\Contracts\AuthenticationContract;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Http\Client\ConnectionException;
@@ -10,6 +11,7 @@ use LaravelZero\Framework\Commands\Command;
 
 class LoginCommand extends Command
 {
+    use ServeReadableHttpResponse;
     /**
      * The signature of the command.
      *
@@ -61,11 +63,7 @@ class LoginCommand extends Command
         } catch(ConnectionException $e) {
             $this->couldNotConnect();
         } catch (RequestException $e){
-           if($e->getCode() == 422){
-               $this->invalidAccessToken();
-        } else{
-               $this->error($e->getMessage());
-            }
+           $this->error($this->serveError($e));
         }
 
         return false;
@@ -89,11 +87,7 @@ class LoginCommand extends Command
             $this->couldNotConnect();
             exit;
         } catch (RequestException $e) {
-            if ($e->getCode() === 422) {
-                $this->invalidAccessToken();
-            } else {
-                $this->errorOccured();
-            }
+           $this->error($this->serverError($e));
             exit;
         }
     }
