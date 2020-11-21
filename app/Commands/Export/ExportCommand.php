@@ -2,16 +2,13 @@
 
 namespace App\Commands\Export;
 
-use App\Commands\BaseCommand;
 use App\Commands\Concerns\CanMultitask;
 use App\Commands\Concerns\ServeReadableHttpResponse;
 use App\Contracts\AuthenticationContract;
 use App\Contracts\ZipExportContract;
 use App\Services\Validation;
 use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
-use Illuminate\Support\Facades\File;
 use LaravelZero\Framework\Commands\Command;
 use PhpZip\Exception\ZipException;
 
@@ -32,7 +29,7 @@ class ExportCommand extends Command
      * @var string
      */
     protected $description = 'Export the current working directory to phpsandbox';
-    private $file_name;
+
 
     /**
      * Execute the console command.
@@ -48,7 +45,6 @@ class ExportCommand extends Command
         Validation $validate
     ) {
 
-      // dd($zip->parseGitIgnoreFiles());
         $this->displayDetails($zip);
         if (!$auth->check()) {
            $this->confirm("You are not authenticated, do you want to continue as guest.")
