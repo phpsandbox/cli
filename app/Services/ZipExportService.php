@@ -5,8 +5,8 @@ namespace App\Services;
 use App\Contracts\BrowserContract;
 use App\Contracts\ZipExportContract;
 use App\Http\Client;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Facades\File;
-use PhpZip\Exception\ZipException;
 use PhpZip\Util\Iterator\IgnoreFilesRecursiveFilterIterator;
 use PhpZip\ZipFile;
 use RecursiveDirectoryIterator;
@@ -166,15 +166,22 @@ class ZipExportService implements ZipExportContract
         $finder = new Finder();
         $gitIgnoreFiles = [];
 
-        $getRegex = Gitignore::toRegex(File::get(base_path('.gitignore')));
+        try {
+            $getRegex = Gitignore::toRegex(File::get(base_path('.gitignore')));
 
-       $file_paths = $finder->in(getcwd())->exclude($this->ignoreFiles)->ignoreVCS(true)->name($getRegex);
+            $file_paths = $finder->in(getcwd())->exclude($this->ignoreFiles)->ignoreVCS(true)->name($getRegex);
 
-       foreach (iterator_to_array($file_paths, true) as $file_path) {
+            foreach (iterator_to_array($file_paths, true) as $file_path) {
 
-           $gitIgnoreFiles[] = $file_path->getRelativePathname();
-       }
-       return $gitIgnoreFiles;
+                $gitIgnoreFiles[] = $file_path->getRelativePathname();
+            }
+
+            return $gitIgnoreFiles;
+
+        } catch (FileNotFoundException $e) {
+            return [];
+        }
+
 
     }
 
