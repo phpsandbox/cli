@@ -47,7 +47,7 @@ class ExportCommand extends Command
 
         $this->displayDetails($zip);
         if (!$auth->check()) {
-           $this->confirm("You are not authenticated, do you want to continue as guest.")
+           $this->confirm("You are not authenticated, do you want to continue as guest?")
             ? $this->info('Authenticated as guest')
             : $this->call('login');
         }
@@ -89,7 +89,7 @@ class ExportCommand extends Command
                     $token =  $auth->retrieveToken();
                     $notebook_details = $zip->upload($this->file_name, $token);
                     $notebook_url = $zip->openNotebook($notebook_details, $token);
-                    $this->info(sprintf("\n your notebook has been provisioned at %s", $notebook_url));
+                    $this->info(sprintf("\nYour notebook has been provisioned at %s", $notebook_url));
                     return true;
                 } catch (RequestException $e) {
                     $this->error($this->serveError($e));
