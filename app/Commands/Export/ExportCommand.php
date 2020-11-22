@@ -2,18 +2,20 @@
 
 namespace App\Commands\Export;
 
-use App\Commands\BaseCommand;
+use App\Commands\Concerns\CanMultitask;
+use App\Commands\Concerns\ServeReadableHttpResponse;
 use App\Contracts\AuthenticationContract;
 use App\Contracts\ZipExportContract;
 use App\Services\Validation;
 use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use LaravelZero\Framework\Commands\Command;
 use PhpZip\Exception\ZipException;
 
 class ExportCommand extends Command
 {
+    use CanMultitask, ServeReadableHttpResponse;
+
     /**
      * The signature of the command.
      *
@@ -27,7 +29,7 @@ class ExportCommand extends Command
      * @var string
      */
     protected $description = 'Export the current working directory to phpsandbox';
-    private $file_name;
+
 
     /**
      * Execute the console command.
@@ -42,9 +44,10 @@ class ExportCommand extends Command
         AuthenticationContract $auth,
         Validation $validate
     ) {
+
         $this->displayDetails($zip);
         if (!$auth->check()) {
-           $this->confirm("You are not authenticated, do you want to continue as guest.")
+           $this->confirm("You are not authenticated, do you want to continue as guest?")
             ? $this->info('Authenticated as guest')
             : $this->call('login');
         }
@@ -86,14 +89,13 @@ class ExportCommand extends Command
                     $token =  $auth->retrieveToken();
                     $notebook_details = $zip->upload($this->file_name, $token);
                     $notebook_url = $zip->openNotebook($notebook_details, $token);
-                    $this->info(sprintf("\n your notebook has been provisioned at %s", $notebook_url));
+                    $this->info(sprintf("\nYour notebook has been provisioned at %s", $notebook_url));
                     return true;
                 } catch (RequestException $e) {
-                    $this->error($e->getMessage());
-                } catch (ConnectionException $e){
-                    $this->couldNotConnect();
+                    $this->error($this->serveError($e));
                 }
                 $zip->cleanUp();
+
                 return false;
             },
             function() use ($zip){
@@ -133,24 +135,6 @@ class ExportCommand extends Command
         $this->table([], $content );
     }
 
-    protected function multipleTask()
-    {
-        $args = func_get_args();
-        $this->info( sprintf('%s : starting',$title = $args[0]));
-        $taskTitles = $args[1];
-        unset($args[0]);
-        unset($args[1]);
-
-        foreach (array_values($args) as $key => $task)
-        {
-            $currentTask = $this->task($taskTitles[$key],$task);
-            if ($currentTask !== true){
-             $this->info(sprintf('%s : failed',$title));
-             exit(1);
-            }
-        }
-        $this->info(sprintf('%s : completed',$title));
-    }
 
     /**
      * Define the command's schedule.

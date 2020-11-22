@@ -110,6 +110,7 @@ class Authentication implements AuthenticationContract
         try{
             return $this->tokenIsValid(File::get($this->tokenStorage));
         } catch(RequestException $e){
+            $this->deleteTokenFile();
             return false;
         }
     }
@@ -139,6 +140,13 @@ class Authentication implements AuthenticationContract
 
     public function logout(): bool
     {
+       return $this->deleteTokenFile();
+    }
+
+    protected function deleteTokenFile(): bool
+    {
         return unlink($this->tokenStorage);
     }
+
+
 }
