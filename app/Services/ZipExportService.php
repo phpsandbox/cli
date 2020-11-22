@@ -10,6 +10,8 @@ use PhpZip\Exception\ZipException;
 use PhpZip\Util\Iterator\IgnoreFilesRecursiveFilterIterator;
 use PhpZip\ZipFile;
 use RecursiveDirectoryIterator;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\Gitignore;
 
 /**
  * Class ZipExportService
@@ -24,11 +26,10 @@ class ZipExportService implements ZipExportContract
      * @var string[]
      */
     protected  $ignoreFiles = [
-                                    'vendor/',
-                                    'node_modules/',
+                                    'vendor',
+                                    'node_modules',
                                     '.git',
-                                    'storage',
-                              ];
+                            ];
     /**
      *
      * @var ZipFile
@@ -90,7 +91,7 @@ class ZipExportService implements ZipExportContract
 
         $ignoreIterator = new IgnoreFilesRecursiveFilterIterator(
             $directoryIterator,
-            $this->ignoreFiles
+            $this->getExcludedFiles()
         );
 
         $compressed_file_name = sha1(microtime()).".zip";
@@ -158,5 +159,27 @@ class ZipExportService implements ZipExportContract
         $browser->open($notebook_url);
 
         return $notebook_url;
+    }
+
+    protected function getGitIgnoreFiles(): array
+    {
+        $finder = new Finder();
+        $gitIgnoreFiles = [];
+
+        $getRegex = Gitignore::toRegex(File::get(base_path('.gitignore')));
+
+       $file_paths = $finder->in(getcwd())->exclude($this->ignoreFiles)->ignoreVCS(true)->name($getRegex);
+
+       foreach (iterator_to_array($file_paths, true) as $file_path) {
+
+           $gitIgnoreFiles[] = $file_path->getRelativePathname();
+       }
+       return $gitIgnoreFiles;
+
+    }
+
+    protected function getExcludedFiles()
+    {
+        return array_merge($this->getGitIgnoreFiles(), $this->ignoreFiles);
     }
 }
