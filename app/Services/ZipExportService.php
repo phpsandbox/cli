@@ -43,6 +43,16 @@ class ZipExportService implements ZipExportContract
     private $client;
 
     /**
+     * @var string
+     */
+    protected string $gitDir = '.git';
+    /**
+     * @var false|string
+     */
+
+    protected  $path;
+
+    /**
      * ZipExportService constructor.
      */
     public function __construct()
@@ -84,6 +94,12 @@ class ZipExportService implements ZipExportContract
         return $this->createZip();
     }
 
+    public function using($path = null): ZipExportService
+    {
+        $this->path = $path ?? getcwd();
+        return $this;
+    }
+
 
     protected function createZip()
     {
@@ -120,7 +136,7 @@ class ZipExportService implements ZipExportContract
      */
     protected function getZipPath()
     {
-        return getcwd();
+        return $this->path;
     }
 
     /**
@@ -167,9 +183,9 @@ class ZipExportService implements ZipExportContract
         $gitIgnoreFiles = [];
 
         try {
-            $getRegex = Gitignore::toRegex(File::get(base_path('.gitignore')));
+            $getRegex = Gitignore::toRegex(File::get($this->path.DIRECTORY_SEPARATOR.'.gitignore'));
 
-            $file_paths = $finder->in(getcwd())->exclude($this->ignoreFiles)->ignoreVCS(true)->name($getRegex);
+            $file_paths = $finder->in($this->path)->exclude($this->ignoreFiles)->ignoreVCS(true)->name($getRegex);
 
             foreach (iterator_to_array($file_paths, true) as $file_path) {
 
@@ -185,8 +201,17 @@ class ZipExportService implements ZipExportContract
 
     }
 
+    protected function isGitRepo()
+    {
+        return File::isDirectory($this->path.DIRECTORY_SEPARATOR.$this->gitDir);
+    }
+
     protected function getExcludedFiles()
     {
+        if (!$this->isGitRepo()) {
+            return $this->ignoreFiles;
+        }
+
         return array_merge($this->getGitIgnoreFiles(), $this->ignoreFiles);
     }
 }
