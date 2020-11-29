@@ -46,6 +46,8 @@ class ExportCommand extends Command
     ) {
 
         $this->displayDetails($zip);
+        $zip->using(getcwd());
+
         if (!$auth->check()) {
            $this->confirm("You are not authenticated, do you want to continue as guest?")
             ? $this->info('Authenticated as guest')
