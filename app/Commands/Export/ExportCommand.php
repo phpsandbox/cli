@@ -132,9 +132,7 @@ class ExportCommand extends Command
             ]
         ];
 
-
-        $content = collect($content);
-        $this->table([], $content );
+        $this->table([], collect($content));
     }
 
 

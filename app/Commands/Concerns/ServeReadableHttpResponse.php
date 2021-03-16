@@ -34,7 +34,7 @@ trait ServeReadableHttpResponse
         }
     }
 
-    public function serverError()
+    public function serverError(): string
     {
         return "Could not complete request. Kindly raise an issue if it persist.";
     }
