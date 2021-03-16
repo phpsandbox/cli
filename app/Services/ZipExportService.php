@@ -43,39 +43,36 @@ class ZipExportService implements ZipExportContract
 
     public function countFiles(string $path): int
     {
-        $size = 0;
-        $ignore = $this->ignoreFiles;
-        $files = scandir($path);
-
-        foreach($files as $t) {
-            if (in_array($t, $ignore)) {
+        $number_of_files = 0;
+        foreach(scandir($path) as $file) {
+            if (in_array($file, array_merge($this->ignoreFiles, ['.', '..']))) {
                 continue;
             }
 
-            if (is_dir(rtrim($path, '/') . '/' . $t)) {
-                $size += $this->countFiles(rtrim($path, '/') . '/' . $t);
+            if (is_dir(rtrim($path, '/') . '/' . $file)) {
+                $number_of_files += $this->countFiles(rtrim($path, '/') . '/' . $file);
             } else {
-                $size++;
+                $number_of_files++;
             }
         }
 
-        return $size;
+        return $number_of_files;
     }
 
 
-    public function compress()
+    public function compress(): bool|string
     {
         return $this->createZip();
     }
 
-    public function using($path = null): ZipExportService
+    public function setWorkingDir(?string $path = null): ZipExportService
     {
         $this->path = $path ?? getcwd();
         return $this;
     }
 
 
-    protected function createZip()
+    protected function createZip(): bool|string
     {
         $directoryIterator = new RecursiveDirectoryIterator($this->getZipPath());
 
@@ -101,13 +98,6 @@ class ZipExportService implements ZipExportContract
         File::cleanDirectory(config('psb.files_storage'));
     }
 
-
-
-    /**
-     * Get the path to the directory to be compressed
-     *
-     * @return string
-     */
     protected function getZipPath()
     {
         return $this->path;
@@ -175,12 +165,12 @@ class ZipExportService implements ZipExportContract
 
     }
 
-    protected function isGitRepo()
+    protected function isGitRepo(): bool
     {
         return File::isDirectory($this->path.DIRECTORY_SEPARATOR.$this->gitDir);
     }
 
-    protected function getExcludedFiles()
+    protected function getExcludedFiles(): array
     {
         if (!$this->isGitRepo()) {
             return $this->ignoreFiles;
