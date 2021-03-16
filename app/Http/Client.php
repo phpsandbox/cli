@@ -69,16 +69,16 @@ class Client
     }
 
 
-    public function fetchCliToken($access_token)
+    public function fetchCliToken($access_token): string
     {
             $response = $this->withMainHeaders()->getClient()->post($this->fetchCliTokenUrl, ['code'=> $access_token]);
             return $response->throw()->json()['token'];
     }
 
-    public function getAuthenticatedUser($token)
+    public function getAuthenticatedUser($token): bool
     {
         $response = $this->withMainHeaders()->authenticateAs($token)->getClient()->get($this->fetchAuthUserUrl);
-        return $response->throw()->status();
+        return $response->throw()->successful();
     }
 
     public function uploadCompressedFile($file_path, $token)

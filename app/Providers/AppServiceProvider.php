@@ -13,8 +13,7 @@ use Illuminate\Support\ServiceProvider;
 class AppServiceProvider extends ServiceProvider
 {
 
-    protected $serviceBindings = [
-        //contract => implememtation
+    public array $bindings = [
         BrowserContract::class => BrowserService::class,
         AuthenticationContract::class => Authentication::class,
         ZipExportContract::class => ZipExportService::class,
@@ -36,8 +35,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        collect($this->serviceBindings)->each(function($attribute,$value){
-            app()->bind($value, $attribute);
-        });
+
     }
 }

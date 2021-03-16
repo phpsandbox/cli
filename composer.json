@@ -16,7 +16,7 @@
         }
     ],
     "require": {
-        "php": "^7.4",
+        "php": "^8.0",
         "ext-json": "*",
         "composer/composer": "^1.10",
         "guzzlehttp/guzzle": "^6.5.5",
@@ -24,7 +24,8 @@
         "laminas/laminas-text": "^2.7",
         "nelexa/zip": "^3.3",
         "padraic/phar-updater": "^1.0.6",
-        "symfony/finder": "^5.1"
+        "symfony/finder": "^5.1",
+        "symfony/process": "^5.2"
     },
     "require-dev": {
         "laravel-zero/framework": "^8.0",

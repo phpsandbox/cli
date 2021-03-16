@@ -2,15 +2,22 @@
 
 namespace App\Services;
 
+use Symfony\Component\Process\Process;
+
 class BrowserService
 {
 
-    /**
-     * Opens User Default Browser
-     *
-     * @param $url
-     */
-    public function  open($url): void
+    public function __construct()
+    {
+
+    }
+
+    public function  open($url)
+    {
+        return $this->runCommand(sprintf("%s %s", $this->getSystemCommand(), $url));
+    }
+
+    public function getSystemCommand(): string
     {
         switch (PHP_OS) {
             case 'Darwin':
@@ -22,7 +29,11 @@ class BrowserService
             default:
                 $opener = 'xdg-open';
         }
+        return $opener;
+    }
 
-        exec(sprintf('%s %s', $opener, $url));
+    public function runCommand($command): bool|string|int
+    {
+        return shell_exec($command);
     }
 }

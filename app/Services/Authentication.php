@@ -28,17 +28,17 @@ class Authentication implements AuthenticationContract
     /**
      *  Default uri to generate token;
      */
-    protected $tokenUrl;
+    protected string $tokenUrl;
 
     /**
      * Default uri to validate token
      */
-    protected $validateTokenUrl;
+    protected string $validateTokenUrl;
 
     /**
      * Default token storage store
      */
-    protected  $tokenStorage;
+    protected   $tokenStorage;
 
 
     public function  __construct()
@@ -80,12 +80,7 @@ class Authentication implements AuthenticationContract
         $browser->open($this->tokenUrl);
     }
 
-
-    /**
-     * @param $access_token
-     * @return mixed
-     */
-    public function fetchCliToken($access_token)
+    public function fetchCliToken($access_token): string
     {
         return $this->client->fetchCliToken($access_token);
     }
@@ -124,7 +119,7 @@ class Authentication implements AuthenticationContract
 
     public  function tokenIsValid(String $token): bool
     {
-        return $this->client->getAuthenticatedUser($token) == 200;
+        return $this->client->getAuthenticatedUser($token);
     }
 
 
@@ -136,7 +131,6 @@ class Authentication implements AuthenticationContract
             return '';
         }
     }
-
 
     public function logout(): bool
     {

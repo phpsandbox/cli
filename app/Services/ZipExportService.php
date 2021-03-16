@@ -13,64 +13,38 @@ use RecursiveDirectoryIterator;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\Gitignore;
 
-/**
- * Class ZipExportService
- * @package App\Services
- */
+
 class ZipExportService implements ZipExportContract
 {
+    protected array $ignoreFiles;
 
-    /**
-     * Directories that should not be included in the zip file
-     *
-     * @var string[]
-     */
-    protected  $ignoreFiles = [
-                                    'vendor',
-                                    'node_modules',
-                                    '.git',
-                            ];
-    /**
-     *
-     * @var ZipFile
-     */
-    protected  $zipper;
+    protected ZipFile $zipper;
 
-    protected  $fileStoragePath;
-    /**
-     * @var Client
-     */
-    private $client;
+    protected  string $fileStoragePath;
 
-    /**
-     * @var string
-     */
+    private Client $client;
+
     protected string $gitDir = '.git';
-    /**
-     * @var false|string
-     */
 
-    protected  $path;
+    protected  string $path;
 
-    /**
-     * ZipExportService constructor.
-     */
     public function __construct()
     {
         $this->zipper = new ZipFile();
         $this->client = new Client();
+        $this->ignoreFiles = config('psb.ignore_files');
         $this->setFileStorage();
     }
 
-    protected function setFileStorage()
+    protected function setFileStorage(): void
     {
         $this->fileStoragePath = config('psb.files_storage');
     }
 
-    public function countFiles($path)
+    public function countFiles(string $path): int
     {
         $size = 0;
-        $ignore = ['vendor','.','.git','..','node_modules','.idea','.phpintel'];
+        $ignore = $this->ignoreFiles;
         $files = scandir($path);
 
         foreach($files as $t) {
