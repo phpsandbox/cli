@@ -38,7 +38,7 @@ class ZipExportTest  extends TestCase
         {
             fopen(base_path("tests/sample/file{$i}.php"), 'w');
         }
-        $this->zip->using(base_path("tests/sample"));
+        $this->zip->setWorkingDir(base_path("tests/sample"));
 
         $filename = $this->zip->compress();
 
@@ -58,7 +58,7 @@ class ZipExportTest  extends TestCase
         @mkdir(base_path("tests/sample/node_modules"));
         @mkdir(base_path("tests/sample/.git"));
 
-        $this->zip->using(base_path("tests/sample"));
+        $this->zip->setWorkingDir(base_path("tests/sample"));
         $filename = $this->zip->compress();
         $zipper = new ZipFile();
         $zipFiles = $zipper->openFile($filename);
@@ -84,7 +84,7 @@ class ZipExportTest  extends TestCase
         $gitignoreContent = [".git","file1.php", "file2.php"];
         file_put_contents(base_path("tests/sample/.gitignore"), implode("\n", $gitignoreContent));
 
-       $filename =  $this->zip->using(base_path("tests/sample"))->compress();
+       $filename =  $this->zip->setWorkingDir(base_path("tests/sample"))->compress();
 
         $zipper = new ZipFile();
         $zipFiles = $zipper->openFile($filename);

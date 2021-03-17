@@ -52,7 +52,7 @@ class LoginCommand extends Command
         });
     }
 
-    protected function tokenValidation(AuthenticationContract  $auth,$token)
+    protected function tokenValidation(AuthenticationContract  $auth,$token): bool
     {
         try {
             $auth->tokenIsValid($token)

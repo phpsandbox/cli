@@ -9,5 +9,4 @@
 ### ToDos
 - [ ] It is safe to rollback these changes should an error occur in production.
 - [ ] I have tested these changes.
-    - [ ] I can [create](https://phpsandbox.test/create) and start a new Laravel notebook 
 - [ ] There are automated tests for these changes.

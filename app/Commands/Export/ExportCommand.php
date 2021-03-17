@@ -9,6 +9,7 @@ use App\Contracts\ZipExportContract;
 use App\Services\Validation;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Http\Client\RequestException;
+use Illuminate\Support\Facades\File;
 use LaravelZero\Framework\Commands\Command;
 use PhpZip\Exception\ZipException;
 
@@ -128,7 +129,7 @@ class ExportCommand extends Command
             ],
             [
                 'Number of files',
-                $zip->countFiles(getcwd())
+                File::countFiles(getcwd(), config('psb.ignore_files'))
             ]
         ];
 

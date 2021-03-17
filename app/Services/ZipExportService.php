@@ -16,7 +16,7 @@ use Symfony\Component\Finder\Gitignore;
 
 class ZipExportService implements ZipExportContract
 {
-    protected array $ignoreFiles;
+    protected array $ignoreFiles = [];
 
     protected ZipFile $zipper;
 
@@ -41,25 +41,6 @@ class ZipExportService implements ZipExportContract
         $this->fileStoragePath = config('psb.files_storage');
     }
 
-    public function countFiles(string $path): int
-    {
-        $number_of_files = 0;
-        foreach(scandir($path) as $file) {
-            if (in_array($file, array_merge($this->ignoreFiles, ['.', '..']))) {
-                continue;
-            }
-
-            if (is_dir(rtrim($path, '/') . '/' . $file)) {
-                $number_of_files += $this->countFiles(rtrim($path, '/') . '/' . $file);
-            } else {
-                $number_of_files++;
-            }
-        }
-
-        return $number_of_files;
-    }
-
-
     public function compress(): bool|string
     {
         return $this->createZip();
@@ -70,7 +51,6 @@ class ZipExportService implements ZipExportContract
         $this->path = $path ?? getcwd();
         return $this;
     }
-
 
     protected function createZip(): bool|string
     {
@@ -92,23 +72,16 @@ class ZipExportService implements ZipExportContract
         return $full_file_path;
     }
 
-
     public function cleanUp()
     {
         File::cleanDirectory(config('psb.files_storage'));
     }
 
-    protected function getZipPath()
+    protected function getZipPath(): string
     {
         return $this->path;
     }
 
-    /**
-     * Get the path to store the compressed file
-     *
-     * @param string $path
-     * @return false|string
-     */
     protected function getStoragePath($path = ''): string
     {
       if (!is_dir($this->fileStoragePath)) {
@@ -123,7 +96,7 @@ class ZipExportService implements ZipExportContract
         return $this->client->uploadCompressedFile($filepath, $token);
     }
 
-    protected function getNotebookUrl(array $details, $token)
+    protected function getNotebookUrl(array $details, $token): string
     {
         return $token == ''
             ? sprintf('%s/n/%s?accessToken=%s', config('psb.base_url'), $details['unique_id'], $details['settings']['accessToken'])
@@ -132,7 +105,7 @@ class ZipExportService implements ZipExportContract
 
     public function openNotebook(array $details, string $token): string
     {
-        $browser = app()->make(BrowserContract::class);
+        $browser = app(BrowserContract::class);
 
         $notebook_url = $this->getNotebookUrl($details, $token);
 
@@ -161,8 +134,6 @@ class ZipExportService implements ZipExportContract
         } catch (FileNotFoundException $e) {
             return [];
         }
-
-
     }
 
     protected function isGitRepo(): bool
@@ -172,10 +143,8 @@ class ZipExportService implements ZipExportContract
 
     protected function getExcludedFiles(): array
     {
-        if (!$this->isGitRepo()) {
-            return $this->ignoreFiles;
-        }
-
-        return array_merge($this->getGitIgnoreFiles(), $this->ignoreFiles);
+        return $this->isGitRepo()
+            ? array_merge($this->getGitIgnoreFiles(), $this->ignoreFiles)
+            : $this->ignoreFiles;
     }
 }

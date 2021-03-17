@@ -5,23 +5,24 @@ namespace App\Services;
 
 
 use Composer\Json\JsonFile;
+use Illuminate\Support\Facades\File;
 use Seld\JsonLint\ParsingException;
 use UnexpectedValueException;
 
 class Validation
 {
-    protected $rules = [
+    protected array $rules = [
         'hasComposer' => 'validateHasComposer',
         'composerIsValid' => 'validateComposerIsValid',
         'size' => 'validateFileSize'
     ];
 
-    protected $directory;
+    protected string $directory;
 
-    protected $errors = [];
+    protected array $errors = [];
 
 
-    public function validate($directory, $rules)
+    public function validate(string $directory, array $rules): bool
     {
         $this->directory = $directory;
         $result = [];
@@ -34,7 +35,7 @@ class Validation
         return !in_array(false, $result);
     }
 
-    protected function parseRule($rule)
+    protected function parseRule($rule): array
     {
         $parse = explode(',', $rule);
 
@@ -45,12 +46,12 @@ class Validation
         return $parse;
     }
 
-    public function errors()
+    public function errors(): array
     {
         return $this->errors;
     }
 
-    protected function validateHasComposer()
+    protected function validateHasComposer(): bool
     {
         if (file_exists($this->directory . DIRECTORY_SEPARATOR . 'composer.json')) {
             return true;
@@ -59,12 +60,9 @@ class Validation
         return false;
     }
 
-    protected function validateComposerIsValid()
+    protected function validateComposerIsValid(): bool
     {
-        if (!file_exists($this->directory . DIRECTORY_SEPARATOR . 'composer.json')) {
-            $this->errors[] = 'composer.json file not found';
-            return false;
-        }
+        if (!$this->validateHasComposer()) return false;
 
         try {
             JsonFile::parseJson(file_get_contents($this->directory . DIRECTORY_SEPARATOR . 'composer.json'));
@@ -72,21 +70,16 @@ class Validation
         } catch (UnexpectedValueException $e) {
             $this->errors[] = 'the composer.json file is invalid';
             return false;
-        } catch (ParsingException $e) {
-            $this->errors[] = 'the composer.json file is invalid';
-            return false;
         }
 
     }
 
-    protected function validateFileSize($file)
+    protected function validateFileSize($file): bool
     {
-        $file_size = filesize($file) / 1024;
-        if ($file_size > $maxFileSize = config('psb.max_file_size')) {
-            $this->errors[] = sprintf('File execeeds the upload limit of %s MB', $maxFileSize/1024);
+        if (File::fileSizeInMB($file) > (float) config('psb.max_file_size')) {
+            $this->errors[] = sprintf('File exceeds the upload limit of %s MB', config('psb.max_file_size'));
             return false;
         }
         return true;
     }
-
 }
