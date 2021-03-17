@@ -4,8 +4,12 @@
 namespace App\Commands\Concerns;
 
 
+use Closure;
+
 trait CanMultitask
 {
+    protected array $tasks;
+
     protected function multipleTask()
     {
         $args = func_get_args();
@@ -23,6 +27,27 @@ trait CanMultitask
             }
         }
         $this->info(sprintf('%s : completed',$title));
+    }
+
+    protected function multiTask(string $title, $tasks)
+    {
+        $tasks();
+        $this->info( sprintf('%s : starting',$title));
+
+        foreach ($this->tasks as   $task)
+        {
+            $currentTask = $this->task($task['title'], $task['action']);
+            if ($currentTask !== true){
+                $this->info(sprintf('%s : failed',$taskTitle));
+                exit(1);
+            }
+        }
+        $this->info(sprintf('%s : completed',$title));
+    }
+
+    protected function tasks($title,  $action)
+    {
+        $this->tasks[] = ["title" => $title, "action" => $action];
     }
 
 }

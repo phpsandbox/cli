@@ -30,6 +30,7 @@ class ExportCommand extends Command
      * @var string
      */
     protected $description = 'Export the current working directory to phpsandbox';
+    private $file_name;
 
 
     /**
@@ -55,58 +56,55 @@ class ExportCommand extends Command
             : $this->call('login');
         }
 
-        $this->multipleTask(
-            'Exporting notebook to phpsandbox',
-            [
-             'Running precompression validations',
-             'Compressing files',
-             'Running pre upload validation',
-             'Uploading notebook',
-             'Cleaning up'
-            ],
-            function () use ($validate){
+        $this->multiTask('Exporting notebook to phpsandbox', function () use ($auth, $zip, $validate) {
+
+            $this->tasks("Running notebook pre-compression validation", function () use ($validate) {
                 if(!$validate->validate(getcwd(),['hasComposer','composerIsValid'])){
                     $this->error(implode("\n",$validate->errors()));
                     return false;
                 }
                 return true;
-            },
-            function () use ($zip){
-                try {
-                    $this->file_name = $zip->compress();
-                    return true;
-                } catch (ZipException $e){
-                    $this->error("Directory could not be compressed.");
-                    return false;
-                }
-            },
-            function() use ($validate){
-                if (!$validate->validate(getcwd(),["size,$this->file_name"])) {
-                    $this->validationError($validate->errors());
-                    return false;
-                }
-                return true;
-            },
-            function() use ($auth, $zip){
-                try {
-                    $token =  $auth->retrieveToken();
-                    $notebook_details = $zip->upload($this->file_name, $token);
-                    $notebook_url = $zip->openNotebook($notebook_details, $token);
-                    $this->info(sprintf("\nYour notebook has been provisioned at %s", $notebook_url));
-                    return true;
-                } catch (RequestException $e) {
-                    $this->error($this->serveError($e));
-                }
-                $zip->cleanUp();
+            });
 
-                return false;
-            },
-            function() use ($zip){
+            $this->tasks('Compressing files', function () use ($zip): bool {
+                    try {
+                        $this->file_name = $zip->compress();
+                        return true;
+                    } catch (ZipException $e){
+                        $this->error("Directory could not be compressed.");
+                        return false;
+                    }
+            });
+
+            $this->tasks('Running pre upload validation', function () use ($validate): bool {
+                    if (!$validate->validate(getcwd(),["size,$this->file_name"])) {
+                        $this->validationError($validate->errors());
+                        return false;
+                    }
+                    return true;
+            });
+
+            $this->tasks('Uploading notebook',  function () use ($zip, $auth): bool {
+                    try {
+                        $token =  $auth->retrieveToken();
+                        $notebook_details = $zip->upload($this->file_name, $token);
+                        $notebook_url = $zip->openNotebook($notebook_details, $token);
+                        $this->info(sprintf("\nYour notebook has been provisioned at %s", $notebook_url));
+                        return true;
+                    } catch (RequestException $e) {
+                        $this->error($this->serveError($e));
+                    }
+                    $zip->cleanUp();
+
+                    return false;
+            });
+
+            $this->tasks('Cleaning up',  function () use ($zip) {
                 $zip->cleanUp();
                 return true;
-            }
-        );
+            });
 
+        });
     }
 
     protected function validationError(array $errors)
