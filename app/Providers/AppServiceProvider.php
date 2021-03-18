@@ -8,7 +8,9 @@ use App\Contracts\ZipExportContract;
 use App\Services\Authentication;
 use App\Services\BrowserService;
 use App\Services\ZipExportService;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -37,6 +39,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot()
     {
+        File::macro('fileSizeInMB', function(string $path) {
+            return (float) $this->size($path) / 1048576;
+        });
+
         File::macro('countFiles', function(string $path, array $ignore = []) {
             $number_of_files = 0;
             foreach(scandir($path) as $file) {
@@ -54,8 +60,5 @@ class AppServiceProvider extends ServiceProvider
             return $number_of_files;
         });
 
-        File::macro('fileSizeInMB', function(string $path) {
-            return (float) $this->size($path) / 1048576;
-        });
     }
 }

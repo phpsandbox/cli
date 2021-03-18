@@ -6,6 +6,7 @@ namespace App\Services;
 
 use Composer\Json\JsonFile;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Seld\JsonLint\ParsingException;
 use UnexpectedValueException;
 
@@ -67,7 +68,7 @@ class Validation
         try {
             JsonFile::parseJson(file_get_contents($this->directory . DIRECTORY_SEPARATOR . 'composer.json'));
             return true;
-        } catch (UnexpectedValueException $e) {
+        } catch (UnexpectedValueException | ParsingException $e) {
             $this->errors[] = 'the composer.json file is invalid';
             return false;
         }

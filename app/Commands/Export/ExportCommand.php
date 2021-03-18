@@ -2,8 +2,8 @@
 
 namespace App\Commands\Export;
 
-use App\Commands\Concerns\CanMultitask;
-use App\Commands\Concerns\ServeReadableHttpResponse;
+use App\Commands\Concerns\Multitask;
+use App\Commands\Concerns\FormatHttpErrorResponse;
 use App\Contracts\AuthenticationContract;
 use App\Contracts\ZipExportContract;
 use App\Services\Validation;
@@ -12,10 +12,11 @@ use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\File;
 use LaravelZero\Framework\Commands\Command;
 use PhpZip\Exception\ZipException;
+use Illuminate\Http\Client\ConnectionException;
 
 class ExportCommand extends Command
 {
-    use CanMultitask, ServeReadableHttpResponse;
+    use Multitask, FormatHttpErrorResponse;
 
     /**
      * The signature of the command.
@@ -56,7 +57,7 @@ class ExportCommand extends Command
             : $this->call('login');
         }
 
-        $this->multiTask('Exporting notebook to phpsandbox', function () use ($auth, $zip, $validate) {
+        $this->multiTask('Exporting project to phpsandbox', function () use ($auth, $zip, $validate) {
 
             $this->tasks("Running notebook pre-compression validation", function () use ($validate) {
                 if(!$validate->validate(getcwd(),['hasComposer','composerIsValid'])){
@@ -86,13 +87,14 @@ class ExportCommand extends Command
 
             $this->tasks('Uploading notebook',  function () use ($zip, $auth): bool {
                     try {
-                        $token =  $auth->retrieveToken();
-                        $notebook_details = $zip->upload($this->file_name, $token);
+                        $notebook_details = $zip->upload($this->file_name, $token = $auth->retrieveToken());
                         $notebook_url = $zip->openNotebook($notebook_details, $token);
                         $this->info(sprintf("\nYour notebook has been provisioned at %s", $notebook_url));
                         return true;
                     } catch (RequestException $e) {
-                        $this->error($this->serveError($e));
+                        $this->error($this->showError($e));
+                    } catch (ConnectionException $e) {
+                        $this->couldNotConnect();
                     }
                     $zip->cleanUp();
 
@@ -107,33 +109,15 @@ class ExportCommand extends Command
         });
     }
 
-    protected function validationError(array $errors)
-    {
-         $this->error(implode("\n",$errors));
-    }
-
-    protected function couldNotConnect()
-    {
-        $this->error('Could not establish a connection. Kindly check that your computer is connected to the internet.');
-    }
-
     protected function displayDetails(ZipExportContract $zip)
     {
         $this->line('phpsandbox cli export');
         $content = [
-            [
-                'Exporting directory',
-                getcwd()
-            ],
-            [
-                'Number of files',
-                File::countFiles(getcwd(), config('psb.ignore_files'))
-            ]
+            ['Exporting directory', getcwd() ],
+            ['Number of files', File::countFiles(getcwd(), config('psb.ignore_files'))]
         ];
 
-
-        $content = collect($content);
-        $this->table([], $content );
+        $this->table([], collect($content) );
     }
 
 
