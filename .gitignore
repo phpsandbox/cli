@@ -3,4 +3,5 @@
 /builds
 .phpunit.result.cache
 .env
+storage/
 

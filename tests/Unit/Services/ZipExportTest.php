@@ -3,8 +3,10 @@
 namespace Tests\Unit\Services;
 
 use App\Contracts\ZipExportContract;
+use App\Services\ZipExportService;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use org\bovigo\vfs\vfsStream;
 use PhpZip\ZipFile;
 use Tests\TestCase;
@@ -13,32 +15,34 @@ class ZipExportTest  extends TestCase
 {
     public function setUp(): void
     {
-        $this->zip = $this->createApplication()->make(ZipExportContract::class);
+        parent::setUp();
+        $this->zip = new ZipExportService();
     }
 
-    public function test_zip_would_clean_up_created_zip_files_after_upload()
+    public function test_zip_cleanup()
     {
-        $structure = [
-            'files'=>[
-                'file.zip'=>''
-            ]
-        ];
-        $root = vfsStream::setup('root', null, $structure);
-        config(['psb.files_storage'=>$root->url().'/files']);
+        Storage::makeDirectory('projects');
+        Storage::put("projects/index.zip", "token");
+        config(['psb.files_storage' => Storage::path("projects")]);
+
         $this->zip->cleanUp();
-        $this->assertFalse($root->hasChild('files/files.zip'));
+        Storage::assertMissing('index.zip');
     }
 
     public function test_zip_creates_file_after_compression()
     {
         //create a folder, add some files. compress it.
-        @mkdir(base_path("tests/sample"));
+        Storage::makeDirectory("project");
+        Storage::makeDirectory("storage");
+
+        config(['psb.files_storage' => Storage::path("storage")]);
 
         for($i=0; $i<= 5; $i++)
         {
-            fopen(base_path("tests/sample/file{$i}.php"), 'w');
+           Storage::put("project/".$i.".php", "<?php ?>");
         }
-        $this->zip->using(base_path("tests/sample"));
+
+        $this->zip->setWorkingDir(Storage::path("project"));
 
         $filename = $this->zip->compress();
 
@@ -48,17 +52,17 @@ class ZipExportTest  extends TestCase
 
     public function test_zip_will_ignore_standard_files_while_compressing()
     {
-        @mkdir(base_path("tests/sample"));
+        Storage::makeDirectory("project");
 
         for ($i=0; $i<= 5; $i++) {
-            fopen(base_path("tests/sample/file{$i}.php"), 'w');
+            Storage::put("project/".$i.".php", "<?php ?>");
         }
         //create a vendors, node_modules
-        @mkdir(base_path("tests/sample/vendor"));
-        @mkdir(base_path("tests/sample/node_modules"));
-        @mkdir(base_path("tests/sample/.git"));
+        Storage::makeDirectory("project/vendor");
+        Storage::makeDirectory("project/node_modules");
+        Storage::makeDirectory("project/.git");
 
-        $this->zip->using(base_path("tests/sample"));
+        $this->zip->setWorkingDir(Storage::path('project'));
         $filename = $this->zip->compress();
         $zipper = new ZipFile();
         $zipFiles = $zipper->openFile($filename);
@@ -71,20 +75,21 @@ class ZipExportTest  extends TestCase
 
     public function test_will_ignore_git_ignore_files_for_git_projects()
     {
-        @mkdir(base_path("tests/sample"));
+        Storage::makeDirectory("project");
 
         for ($i=0; $i<= 5; $i++) {
-            fopen(base_path("tests/sample/file{$i}.php"), 'w');
+            Storage::put("project/file".$i.".php", "<?php ?>");
         }
-        //create sample files
-        @mkdir(base_path("tests/sample/.git"));
-        fopen(base_path("tests/sample/.gitignore"), 'w');
+        //create a vendors, node_modules
+        Storage::makeDirectory("project/vendor");
+        Storage::makeDirectory("project/node_modules");
+        Storage::makeDirectory("project/.git");
 
-        //add some content to gitifnore
-        $gitignoreContent = [".git","file1.php", "file2.php"];
-        file_put_contents(base_path("tests/sample/.gitignore"), implode("\n", $gitignoreContent));
+        $gitignoreContent = [".git","file1.php", "file2.php", "vendor", "node_modules"];
+        Storage::put("project/.gitignore", implode("\n", $gitignoreContent));
 
-       $filename =  $this->zip->using(base_path("tests/sample"))->compress();
+
+       $filename =  $this->zip->setWorkingDir(Storage::path("project"))->compress();
 
         $zipper = new ZipFile();
         $zipFiles = $zipper->openFile($filename);
@@ -96,6 +101,6 @@ class ZipExportTest  extends TestCase
     }
     public function tearDown(): void
     {
-        system("rm -rf ".escapeshellarg(base_path("tests/sample")));
+       $this->zip = new ZipExportService();
     }
 }

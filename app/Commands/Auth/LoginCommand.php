@@ -2,7 +2,7 @@
 
 namespace App\Commands\Auth;
 
-use App\Commands\Concerns\ServeReadableHttpResponse;
+use App\Commands\Concerns\FormatHttpErrorResponse;
 use App\Contracts\AuthenticationContract;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Http\Client\ConnectionException;
@@ -11,7 +11,7 @@ use LaravelZero\Framework\Commands\Command;
 
 class LoginCommand extends Command
 {
-    use ServeReadableHttpResponse;
+    use FormatHttpErrorResponse;
     /**
      * The signature of the command.
      *
@@ -87,26 +87,10 @@ class LoginCommand extends Command
             $this->couldNotConnect();
             exit;
         } catch (RequestException $e) {
-           $this->error($this->serverError($e));
+           $this->error($this->showError($e));
             exit;
         }
     }
-
-    protected function invalidAccessToken()
-    {
-        $this->error('Invalid access token.');
-    }
-
-    protected function errorOccured()
-    {
-        $this->error('An error occured!');
-    }
-
-    protected function couldNotConnect()
-    {
-        $this->error('Could not establish a connection. Kindly check that your computer is connected to the internet.');
-    }
-
 
     /**
      * Define the command's schedule.

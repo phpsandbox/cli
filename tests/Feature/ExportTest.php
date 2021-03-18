@@ -14,7 +14,7 @@ class ExportTest   extends TestCase
     /**
      * test will export file of unauthenticated user
      */
-    public function test_will_allow_unauthenticated_user()
+    public function test_will_allow_unauthenticated_user_export_project()
     {
         $this->partialMock(AuthenticationContract::class,function ($mock){
             $mock->shouldReceive('check')->andReturn(false);
@@ -24,8 +24,7 @@ class ExportTest   extends TestCase
             $mock->shouldReceive('validate')->twice()->andReturn(true);
         });
         $this->mock(ZipExportContract::class,function ($mock){
-            $mock->shouldReceive('using')->with(getcwd());
-           $mock->shouldReceive('countFiles')->once()->with(getcwd())->andReturn(5);
+            $mock->shouldReceive('setWorkingDir')->with(getcwd());
             $mock->shouldReceive('compress')->once()->andReturn('filename.zip');
            $mock->shouldReceive('upload')->once()->andReturn('notebook_details');
            $mock->shouldReceive('cleanUp')->once();
@@ -35,8 +34,8 @@ class ExportTest   extends TestCase
         $this->artisan('export')
             ->expectsQuestion('You are not authenticated, do you want to continue as guest?', 'yes')
             ->expectsOutput('Authenticated as guest')
-            ->expectsOutput('Exporting notebook to phpsandbox : starting')
-            ->expectsOutput('Exporting notebook to phpsandbox : completed')
+            ->expectsOutput('Exporting project to phpsandbox : starting')
+            ->expectsOutput('Exporting project to phpsandbox : completed')
             ->assertExitCode(0);
     }
 
@@ -55,8 +54,7 @@ class ExportTest   extends TestCase
             $mock->shouldReceive('validate')->twice()->andReturn(true);
         });
         $this->mock(ZipExportContract::class,function ($mock){
-            $mock->shouldReceive('using')->with(getcwd());
-            $mock->shouldReceive('countFiles')->once()->with(getcwd())->andReturn(5);
+            $mock->shouldReceive('setWorkingDir')->with(getcwd());
             $mock->shouldReceive('compress')->once()->andReturn('filename.zip');
             $mock->shouldReceive('upload')->once()->andReturn('notebook_details');
             $mock->shouldReceive('cleanUp')->once();
@@ -64,8 +62,8 @@ class ExportTest   extends TestCase
         });
 
         $this->artisan('export')
-            ->expectsOutput('Exporting notebook to phpsandbox : starting')
-            ->expectsOutput('Exporting notebook to phpsandbox : completed')
+            ->expectsOutput('Exporting project to phpsandbox : starting')
+            ->expectsOutput('Exporting project to phpsandbox : completed')
             ->assertExitCode(0);
     }
 }

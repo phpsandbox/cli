@@ -13,95 +13,46 @@ use RecursiveDirectoryIterator;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\Gitignore;
 
-/**
- * Class ZipExportService
- * @package App\Services
- */
+
 class ZipExportService implements ZipExportContract
 {
+    protected array $ignoreFiles = [];
 
-    /**
-     * Directories that should not be included in the zip file
-     *
-     * @var string[]
-     */
-    protected  $ignoreFiles = [
-                                    'vendor',
-                                    'node_modules',
-                                    '.git',
-                            ];
-    /**
-     *
-     * @var ZipFile
-     */
-    protected  $zipper;
+    protected ZipFile $zipper;
 
-    protected  $fileStoragePath;
-    /**
-     * @var Client
-     */
-    private $client;
+    protected  string $fileStoragePath;
 
-    /**
-     * @var string
-     */
+    private Client $client;
+
     protected string $gitDir = '.git';
-    /**
-     * @var false|string
-     */
 
-    protected  $path;
+    protected  string $path;
 
-    /**
-     * ZipExportService constructor.
-     */
     public function __construct()
     {
         $this->zipper = new ZipFile();
         $this->client = new Client();
+        $this->ignoreFiles = config('psb.ignore_files');
         $this->setFileStorage();
     }
 
-    protected function setFileStorage()
+    protected function setFileStorage(): void
     {
         $this->fileStoragePath = config('psb.files_storage');
     }
 
-    public function countFiles($path)
-    {
-        $size = 0;
-        $ignore = ['vendor','.','.git','..','node_modules','.idea','.phpintel'];
-        $files = scandir($path);
-
-        foreach($files as $t) {
-            if (in_array($t, $ignore)) {
-                continue;
-            }
-
-            if (is_dir(rtrim($path, '/') . '/' . $t)) {
-                $size += $this->countFiles(rtrim($path, '/') . '/' . $t);
-            } else {
-                $size++;
-            }
-        }
-
-        return $size;
-    }
-
-
-    public function compress()
+    public function compress(): bool|string
     {
         return $this->createZip();
     }
 
-    public function using($path = null): ZipExportService
+    public function setWorkingDir(?string $path = null): ZipExportService
     {
         $this->path = $path ?? getcwd();
         return $this;
     }
 
-
-    protected function createZip()
+    protected function createZip(): bool|string
     {
         $directoryIterator = new RecursiveDirectoryIterator($this->getZipPath());
 
@@ -121,30 +72,16 @@ class ZipExportService implements ZipExportContract
         return $full_file_path;
     }
 
-
     public function cleanUp()
     {
         File::cleanDirectory(config('psb.files_storage'));
     }
 
-
-
-    /**
-     * Get the path to the directory to be compressed
-     *
-     * @return string
-     */
-    protected function getZipPath()
+    protected function getZipPath(): string
     {
         return $this->path;
     }
 
-    /**
-     * Get the path to store the compressed file
-     *
-     * @param string $path
-     * @return false|string
-     */
     protected function getStoragePath($path = ''): string
     {
       if (!is_dir($this->fileStoragePath)) {
@@ -159,7 +96,7 @@ class ZipExportService implements ZipExportContract
         return $this->client->uploadCompressedFile($filepath, $token);
     }
 
-    protected function getNotebookUrl(array $details, $token)
+    protected function getNotebookUrl(array $details, $token): string
     {
         return $token == ''
             ? sprintf('%s/n/%s?accessToken=%s', config('psb.base_url'), $details['unique_id'], $details['settings']['accessToken'])
@@ -168,7 +105,7 @@ class ZipExportService implements ZipExportContract
 
     public function openNotebook(array $details, string $token): string
     {
-        $browser = app()->make(BrowserContract::class);
+        $browser = app(BrowserContract::class);
 
         $notebook_url = $this->getNotebookUrl($details, $token);
 
@@ -197,21 +134,17 @@ class ZipExportService implements ZipExportContract
         } catch (FileNotFoundException $e) {
             return [];
         }
-
-
     }
 
-    protected function isGitRepo()
+    protected function isGitRepo(): bool
     {
         return File::isDirectory($this->path.DIRECTORY_SEPARATOR.$this->gitDir);
     }
 
-    protected function getExcludedFiles()
+    protected function getExcludedFiles(): array
     {
-        if (!$this->isGitRepo()) {
-            return $this->ignoreFiles;
-        }
-
-        return array_merge($this->getGitIgnoreFiles(), $this->ignoreFiles);
+        return $this->isGitRepo()
+            ? array_merge($this->getGitIgnoreFiles(), $this->ignoreFiles)
+            : $this->ignoreFiles;
     }
 }

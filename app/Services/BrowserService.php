@@ -4,25 +4,22 @@ namespace App\Services;
 
 class BrowserService
 {
-
-    /**
-     * Opens User Default Browser
-     *
-     * @param $url
-     */
-    public function  open($url): void
+    public function  open(string $url)
     {
-        switch (PHP_OS) {
-            case 'Darwin':
-                $opener = 'open';
-                break;
-            case 'WINNT':
-                $opener = 'start';
-                break;
-            default:
-                $opener = 'xdg-open';
-        }
+         $this->runCommand(sprintf("%s %s", $this->getSystemCommand(), $url));
+    }
 
-        exec(sprintf('%s %s', $opener, $url));
+    public function getSystemCommand(): string
+    {
+        return match (PHP_OS) {
+            'Darwin' => 'open',
+            'WINNT' => 'start',
+            default => 'xdg-open',
+        };
+    }
+
+    public function runCommand($command)
+    {
+         shell_exec($command);
     }
 }

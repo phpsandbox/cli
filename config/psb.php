@@ -36,8 +36,21 @@ return [
     | Retrieve authenticated user
     |--------------------------------------------------------------------------
     |
-    |maximum file upload size
+    |maximum file upload size in megabyte
     |
     */
-    'max_file_size' => env('MAX_FILE_SIZE',10240),
+    'max_file_size' => 100,
+    /*
+    |--------------------------------------------------------------------------
+    | files to ignore when zipping the project
+    |--------------------------------------------------------------------------
+    |
+    |
+    |
+    */
+    'ignore_files' => [
+        'vendor',
+        'node_modules',
+        '.git'
+    ]
 ];

@@ -5,7 +5,6 @@ namespace App\Commands\Concerns;
 
 
 use Illuminate\Http\Client\RequestException;
-use Illuminate\Support\Str;
 
 trait ServeReadableHttpResponse
 {

@@ -24,7 +24,8 @@
         "laminas/laminas-text": "^2.7",
         "nelexa/zip": "^3.3",
         "padraic/phar-updater": "^1.0.6",
-        "symfony/finder": "^5.1"
+        "symfony/finder": "^5.1",
+        "symfony/process": "^5.2"
     },
     "require-dev": {
         "laravel-zero/framework": "^8.0",
