@@ -2,6 +2,7 @@
 
 
 use App\Services\Validation;
+use Illuminate\Support\Facades\Storage;
 use org\bovigo\vfs\content\LargeFileContent;
 use org\bovigo\vfs\vfsStream;
 use Tests\TestCase;
@@ -16,14 +17,13 @@ class ValidationTest extends TestCase
     /**
      * @var Validation
      */
-    private $validator;
+    private Validation $validator;
 
     public function setUp(): void
     {
         $this->validator = new Validation();
         $app = $this->createApplication();
-        $fileStorage = env('FILES_STORAGE');
-
+        Storage::fake();
     }
 
     /**
@@ -31,22 +31,21 @@ class ValidationTest extends TestCase
      */
     public function test_composer_is_valid_rule()
     {
-        $invalid_structure = [
-            'composer.json'=>''
-        ];
-        $valid_structure = [
-            'composer.json'=>json_encode([''])
-        ];
+        Storage::makeDirectory("valid_project");
+        Storage::put("valid_project/composer.json", "{}");
 
-        $this->assertFalse($this->validator->validate(
-            vfsStream::setup('root',null, $invalid_structure)->url(),[
+        Storage::makeDirectory("invalid_project");
+        Storage::put("invalid_project/composer.json", " ");
+
+        $this->assertTrue($this->validator->validate(
+           Storage::path("valid_project"),[
             'composerIsValid'
         ]));
 
-        $this->assertTrue(count($this->validator->errors()) == 1);
+        $this->assertTrue(count($this->validator->errors()) == 0);
 
-        $this->assertTrue($this->validator->validate(
-            vfsStream::setup('root',null, $valid_structure)->url(),[
+        $this->assertFalse($this->validator->validate(
+           Storage::path("invalid_project"),[
             'composerIsValid'
         ]));
 
@@ -54,71 +53,59 @@ class ValidationTest extends TestCase
 
     }
 
-
-    /**
-     * @test
-     */
     public function test_file_size_rule()
     {
-        $valid_size = env('MAX_FILE_SIZE');
-        $invalid_size = $valid_size * 2;
-        $root      = vfsStream::setup();
-        $smallFile = vfsStream::newFile('small.zip')
-            ->withContent(LargeFileContent::withKilobytes($valid_size))
-            ->at($root);
+        /* test will fail for large files. We simulate this by setting max_file_size to negative*/
+        config(['psb.max_file_size' => -1]);
 
-       $largeFile = vfsStream::newFile('large.zip')
-            ->withContent(LargeFileContent::withKilobytes($invalid_size))
-            ->at($root);
+        Storage::makeDirectory("project");
+        Storage::put("project/index.zip", "<?php echo 'hello' ?>");
 
-
-
-        $this->assertTrue($this->validator->validate($root,[
-            "size,".$smallFile->url()
+        $this->assertFalse($this->validator->validate(Storage::path("project"),[
+            "size,".Storage::path("project/index.zip")
         ]));
-        $this->assertFalse($this->validator->validate($root,[
-            "size,".$largeFile->url()
+
+        /* test for small files */
+
+        config(['psb.max_file_size' => 10]);
+
+        Storage::put("project/hello.zip", "<?php echo 'hello' ?>");
+
+        $this->assertTrue($this->validator->validate(Storage::path("project"),[
+            "size,".Storage::path("project/hello.zip")
         ]));
+
 
     }
 
-
-    /**
-     * @test
-     */
     public function test_has_composer_json_rule()
     {
-        $invalid_structure = [
-            'app'=>[
-                'sample.php' => 'some sample text'
-            ]
-        ];
+        Storage::makeDirectory("valid_project");
+        Storage::put("valid_project/composer.json", "{}");
 
-        $valid_structure = [
-            'composer.json'=>''
-        ];
-
-        $this->assertFalse($this->validator->validate(
-            vfsStream::setup('root',null, $invalid_structure)->url(),[
-                'hasComposer'
-            ])
-        );
-        $this->assertTrue(count($this->validator->errors()) === 1);
+        Storage::makeDirectory("invalid_project");
 
         $this->assertTrue($this->validator->validate(
-            vfsStream::setup('root',null, $valid_structure)->url(), [
+            Storage::path("valid_project"),[
+                'hasComposer'
+            ])
+        );
+        $this->assertCount(0, $this->validator->errors());
+
+        $this->assertFalse($this->validator->validate(
+            Storage::path("invalid_project"), [
                 'hasComposer'
             ])
         );
 
-        $this->assertTrue(count($this->validator->errors()) <= 1);
+        $this->assertTrue(count($this->validator->errors()) > 0);
 
     }
 
 
     public function tearDown(): void
     {
-        $this->validator = null;
+        $this->validator = new Validation();
         $app = null;
     }
 }

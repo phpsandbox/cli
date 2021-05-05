@@ -8,6 +8,7 @@ use App\Contracts\AuthenticationContract;
 use App\Services\Authentication;
 use App\Services\BrowserService;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use org\bovigo\vfs\vfsStream;
 use Tests\TestCase;
 
@@ -16,12 +17,10 @@ class AuthenticationTest  extends TestCase
 
     public function test_retrieve_token()
     {
-        $structure = [
-           'token'=>'token'
-        ];
-        $root = vfsStream::setup('home',null);
-        $root = vfsStream::create($structure,$root)->url();
-        config(['psb.token_storage' => $root.'/token']);
+        Storage::makeDirectory('tokens');
+        Storage::put("tokens/token", "token");
+        config(['psb.token_storage' => Storage::path("tokens/token")]);
+
         $auth = new Authentication();
         $this->assertTrue($auth->retrieveToken() == 'token');
     }
@@ -31,15 +30,13 @@ class AuthenticationTest  extends TestCase
      */
     public function test_logout()
     {
-        $structure = [
-            'token'=>'token'
-        ];
-        $root = vfsStream::setup('home',null);
-        $token_storage = vfsStream::create($structure,$root)->url();
-        config(['psb.token_storage'=>$token_storage.'/token']);
+        Storage::makeDirectory('tokens');
+        Storage::put("tokens/token", "token");
+        config(['psb.token_storage' => Storage::path("tokens/token")]);
+
         $auth = new Authentication();
         $auth->logout();
-        $this->assertFalse($root->hasChild('token'));
+        Storage::assertMissing("tokens/token");
     }
 
 
@@ -68,13 +65,13 @@ class AuthenticationTest  extends TestCase
 
     public function test_store_new_token()
     {
-        $structure = [];
-        $root = vfsStream::setup('root', null, $structure);
-        config(['psb.token_storage' => $root->url().'/token']);
+        Storage::makeDirectory('tokens');
+        config(['psb.token_storage' => Storage::path("tokens")."/token"]);
+
         $auth = new Authentication();
         $auth->storeNewToken('token');
-        $this->assertTrue($root->hasChild('token'));
-        $this->assertSame('token', file_get_contents($root->url().'/token'));
+        Storage::assertExists("tokens/token");
+        $this->assertSame('token', Storage::get("tokens/token"));
     }
 
     public function test_launch_browser()

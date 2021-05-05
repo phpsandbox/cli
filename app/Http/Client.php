@@ -44,19 +44,19 @@ class Client
         $this->buildHttpClient();
     }
 
-    protected function setFileUploadUrl()
+    protected function setFileUploadUrl(): static
     {
         $this->fileUploadUrl = '/cli/import';
         return $this;
     }
 
-    protected function setRedirectToBrowserUrl()
+    protected function setRedirectToBrowserUrl(): static
     {
         $this->redirectToBrowserUrl = sprintf('%s/login/cli', config('psb.base_url'));
         return $this;
     }
 
-    protected function setFetchCliTokenUrl()
+    protected function setFetchCliTokenUrl(): static
     {
         $this->fetchCliTokenUrl = 'cli/login';
         return $this;
@@ -69,16 +69,16 @@ class Client
     }
 
 
-    public function fetchCliToken($access_token)
+    public function fetchCliToken($access_token): string
     {
             $response = $this->withMainHeaders()->getClient()->post($this->fetchCliTokenUrl, ['code'=> $access_token]);
             return $response->throw()->json()['token'];
     }
 
-    public function getAuthenticatedUser($token)
+    public function getAuthenticatedUser($token): bool
     {
         $response = $this->withMainHeaders()->authenticateAs($token)->getClient()->get($this->fetchAuthUserUrl);
-        return $response->throw()->status();
+        return $response->throw()->successful();
     }
 
     public function uploadCompressedFile($file_path, $token)
@@ -92,7 +92,7 @@ class Client
         return $response->throw()->json();
     }
 
-    public function getClient()
+    public function getClient(): PendingRequest
     {
         return $this->httpClient;
     }
@@ -102,12 +102,7 @@ class Client
         $this->httpClient = Http::baseUrl(sprintf('%s/api', config('psb.base_url')))->withHeaders($this->headers);
     }
 
-    protected function setHeader($type , $value)
-    {
-        $this->headers[$type] = $value;
-    }
-
-    protected function withMainHeaders()
+    protected function withMainHeaders(): static
     {
         $this->httpClient->withHeaders([
             'Content-Type' => 'application/json',
@@ -117,7 +112,7 @@ class Client
         return $this;
     }
 
-    public function authenticateAs($token)
+    public function authenticateAs(string $token): static
     {
         $this->httpClient->withHeaders(['Authorization' => "Bearer $token"]);
         return $this;

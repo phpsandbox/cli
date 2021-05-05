@@ -39,7 +39,7 @@ class LogoutCommand extends Command
 
             $auth->logout()
                 ? $this->info('User logged out successfully')
-                : $this->error('An error occured');
+                : $this->error('An error occurred');
 
             return true;
         });

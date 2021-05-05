@@ -2,6 +2,7 @@
 
 namespace App\Commands\Auth;
 
+use App\Commands\Concerns\FormatHttpErrorResponse;
 use App\Contracts\AuthenticationContract;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Http\Client\ConnectionException;
@@ -10,6 +11,7 @@ use LaravelZero\Framework\Commands\Command;
 
 class LoginCommand extends Command
 {
+    use FormatHttpErrorResponse;
     /**
      * The signature of the command.
      *
@@ -50,7 +52,7 @@ class LoginCommand extends Command
         });
     }
 
-    protected function tokenValidation(AuthenticationContract  $auth,$token)
+    protected function tokenValidation(AuthenticationContract  $auth,$token): bool
     {
         try {
             $auth->tokenIsValid($token)
@@ -61,11 +63,7 @@ class LoginCommand extends Command
         } catch(ConnectionException $e) {
             $this->couldNotConnect();
         } catch (RequestException $e){
-           if($e->getCode() == 422){
-               $this->invalidAccessToken();
-        } else{
-               $this->error($e->getMessage());
-            }
+           $this->error($this->serveError($e));
         }
 
         return false;
@@ -89,30 +87,10 @@ class LoginCommand extends Command
             $this->couldNotConnect();
             exit;
         } catch (RequestException $e) {
-            if ($e->getCode() === 422) {
-                $this->invalidAccessToken();
-            } else {
-                $this->errorOccured();
-            }
+           $this->error($this->showError($e));
             exit;
         }
     }
-
-    protected function invalidAccessToken()
-    {
-        $this->error('Invalid access token.');
-    }
-
-    protected function errorOccured()
-    {
-        $this->error('An error occured!');
-    }
-
-    protected function couldNotConnect()
-    {
-        $this->error('Could not establish a connection. Kindly check that your computer is connected to the internet.');
-    }
-
 
     /**
      * Define the command's schedule.

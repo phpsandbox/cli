@@ -38,7 +38,7 @@ class LogoutCommandTest  extends  TestCase
             $mock->shouldReceive('logout')->andReturn(false);
         });
         $this->artisan('logout')
-            ->expectsOutput('An error occured')
+            ->expectsOutput('An error occurred')
             ->assertExitCode(0);
     }
 }
