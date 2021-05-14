@@ -5,24 +5,28 @@ namespace Tests\Feature;
 use App\Contracts\AuthenticationContract;
 use Tests\TestCase;
 
-class LogoutCommandTest  extends  TestCase
+class LogoutCommandTest extends TestCase
 {
-    public function test_authenticated_user_is_logged_out()
+    /**
+     * @test
+     */
+    public function authenticatedUserIsLoggedOut(): void
     {
-           $this->partialMock(AuthenticationContract::class,function($mock){
-              $mock->shouldReceive('check')->andReturn(true);
-              $mock->shouldReceive('logout')->andReturn(true);
-           });
-            $this->artisan('logout')
-                ->expectsOutput('User logged out successfully')
-                ->assertExitCode(0);
-
+        $this->partialMock(AuthenticationContract::class, function ($mock): void {
+            $mock->shouldReceive('check')->andReturn(true);
+            $mock->shouldReceive('logout')->andReturn(true);
+        });
+        $this->artisan('logout')
+            ->expectsOutput('User logged out successfully')
+            ->assertExitCode(0);
     }
 
-
-    public function test_no_logout_if_no_user_was_previously_authenticated()
+    /**
+     * @test
+     */
+    public function noLogoutIfNoUserWasPreviouslyAuthenticated(): void
     {
-        $this->partialMock(AuthenticationContract::class,function($mock){
+        $this->partialMock(AuthenticationContract::class, function ($mock): void {
             $mock->shouldReceive('check')->andReturn(false);
             $mock->shouldReceive('logout')->andReturn(true);
         });
@@ -31,9 +35,12 @@ class LogoutCommandTest  extends  TestCase
             ->assertExitCode(0);
     }
 
-    public function test_error_occured_during_logout()
+    /**
+     * @test
+     */
+    public function errorOccuredDuringLogout(): void
     {
-        $this->partialMock(AuthenticationContract::class,function($mock){
+        $this->partialMock(AuthenticationContract::class, function ($mock): void {
             $mock->shouldReceive('check')->andReturn(true);
             $mock->shouldReceive('logout')->andReturn(false);
         });

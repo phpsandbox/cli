@@ -12,12 +12,12 @@ use LaravelZero\Framework\Commands\Command;
 class LoginCommand extends Command
 {
     use FormatHttpErrorResponse;
+
     /**
      * The signature of the command.
      *
      * @var string
      */
-
     protected $signature = 'login  {--token=}';
 
     /**
@@ -35,15 +35,13 @@ class LoginCommand extends Command
      */
     public function handle(AuthenticationContract  $auth)
     {
-        $this->task("Authenticating", function() use($auth) {
-
-            if(! $auth->check()) {
-
-               $this->triggerNewLogin($auth);
+        $this->task('Authenticating', function () use ($auth) {
+            if (! $auth->check()) {
+                $this->triggerNewLogin($auth);
 
                 $token = $auth->retrieveToken();
 
-                return $this->tokenValidation($auth,$token);
+                return $this->tokenValidation($auth, $token);
             }
 
             $this->info('Already authenticated');
@@ -52,7 +50,7 @@ class LoginCommand extends Command
         });
     }
 
-    protected function tokenValidation(AuthenticationContract  $auth,$token): bool
+    protected function tokenValidation(AuthenticationContract  $auth, $token): bool
     {
         try {
             $auth->tokenIsValid($token)
@@ -60,17 +58,16 @@ class LoginCommand extends Command
                 : $this->error('Token could not be validated.');
 
             return true;
-        } catch(ConnectionException $e) {
+        } catch (ConnectionException $e) {
             $this->couldNotConnect();
-        } catch (RequestException $e){
-           $this->error($this->serveError($e));
+        } catch (RequestException $e) {
+            $this->error($this->serveError($e));
         }
 
         return false;
-
     }
 
-    protected function triggerNewLogin(AuthenticationContract  $auth)
+    protected function triggerNewLogin(AuthenticationContract  $auth): void
     {
         if ($this->option('token') != null) {
             $access_token = $this->option('token');
@@ -87,7 +84,7 @@ class LoginCommand extends Command
             $this->couldNotConnect();
             exit;
         } catch (RequestException $e) {
-           $this->error($this->showError($e));
+            $this->error($this->showError($e));
             exit;
         }
     }

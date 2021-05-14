@@ -2,6 +2,7 @@
 
 namespace App\Contracts;
 
-interface BrowserContract {
-    public function open(String $val): void;
+interface BrowserContract
+{
+    public function open(string $val): void;
 }

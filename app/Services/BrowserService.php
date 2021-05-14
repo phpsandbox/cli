@@ -4,9 +4,9 @@ namespace App\Services;
 
 class BrowserService
 {
-    public function  open(string $url)
+    public function open(string $url): void
     {
-         $this->runCommand(sprintf("%s %s", $this->getSystemCommand(), $url));
+        $this->runCommand(sprintf('%s %s', $this->getSystemCommand(), $url));
     }
 
     public function getSystemCommand(): string
@@ -18,8 +18,8 @@ class BrowserService
         };
     }
 
-    public function runCommand($command)
+    public function runCommand($command): void
     {
-         shell_exec($command);
+        shell_exec($command);
     }
 }

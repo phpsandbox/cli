@@ -1,20 +1,19 @@
 <?php
 
-
 namespace Tests\Feature;
-
 
 use App\Contracts\AuthenticationContract;
 use App\Services\Authentication;
 use Tests\TestCase;
 
-class LoginCommandTest  extends TestCase
+class LoginCommandTest extends TestCase
 {
-
-
-    public function test_fresh_login_command()
+    /**
+     * @test
+     */
+    public function freshLoginCommand(): void
     {
-        $this->partialMock(Authentication::class, function ($mock) {
+        $this->partialMock(Authentication::class, function ($mock): void {
             $mock->shouldReceive('check')->andReturn(false);
             $mock->shouldReceive('launchBrowser')->once();
             $mock->shouldReceive('fetchCliToken')->once()->andReturn('randomToken');
@@ -23,12 +22,16 @@ class LoginCommandTest  extends TestCase
         });
 
         $this->artisan('login')
-            ->expectsQuestion('Enter the authentication token generated from the browser','randomToken')
+            ->expectsQuestion('Enter the authentication token generated from the browser', 'randomToken')
             ->assertExitCode(0);
     }
 
-    public function test_login_works_if_access_token_option_is_provided_and_browser_is_not_opened(){
-        $this->mock(Authentication::class, function ($mock) {
+    /**
+     * @test
+     */
+    public function loginWorksIfAccessTokenOptionIsProvidedAndBrowserIsNotOpened(): void
+    {
+        $this->mock(Authentication::class, function ($mock): void {
             $mock->shouldReceive('check')->andReturn(false);
             $mock->shouldReceive('fetchCliToken')->once()->andReturn('randomToken');
             $mock->shouldReceive('retrieveToken')->once()->andReturn('rightToken');
@@ -40,27 +43,32 @@ class LoginCommandTest  extends TestCase
             ->assertExitCode(0);
     }
 
-    public function test_login_fails_if_token_is_wrong()
+    /**
+     * @test
+     */
+    public function loginFailsIfTokenIsWrong(): void
     {
-        $this->partialMock(AuthenticationContract::class, function ($mock) {
+        $this->partialMock(AuthenticationContract::class, function ($mock): void {
             $mock->shouldReceive('check')->andReturn(false);
             $mock->shouldReceive('launchBrowser')->once();
             $mock->shouldReceive('fetchCliToken')->once()->andReturn('randomToken');
             $mock->shouldReceive('storeNewToken')->once();
             $mock->shouldReceive('retrieveToken')->once()->andReturn('wrongToken');
             $mock->shouldReceive('tokenIsValid')->with('wrongToken')->once()->andReturn(false);
-
         });
 
         $this->artisan('login')
-            ->expectsQuestion('Enter the authentication token generated from the browser','randomToken')
+            ->expectsQuestion('Enter the authentication token generated from the browser', 'randomToken')
             ->expectsOutput('Token could not be validated.')
             ->assertExitCode(0);
     }
 
-    public function test_will_use_access_token_if_provided()
+    /**
+     * @test
+     */
+    public function willUseAccessTokenIfProvided(): void
     {
-        $this->partialMock(AuthenticationContract::class,function ($mock){
+        $this->partialMock(AuthenticationContract::class, function ($mock): void {
             $mock->shouldReceive('check')->andReturn(false);
             $mock->shouldReceive('fetchCliToken')->once()->andReturn('randomToken');
             $mock->shouldReceive('storeNewToken')->once();

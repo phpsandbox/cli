@@ -2,19 +2,15 @@
 
 namespace App\Services;
 
-use App\Commands\Auth\LoginCommand;
 use App\Contracts\AuthenticationContract;
 use App\Contracts\BrowserContract;
 use App\Http\Client;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\File;
 
-
 /**
  * Class Authentication
- * @package App\Services
  */
 class Authentication implements AuthenticationContract
 {
@@ -38,10 +34,9 @@ class Authentication implements AuthenticationContract
     /**
      * Default token storage store
      */
-    protected   $tokenStorage;
+    protected $tokenStorage;
 
-
-    public function  __construct()
+    public function __construct()
     {
         $this->setTokenUrl()
             ->setTokenStorage()
@@ -50,31 +45,31 @@ class Authentication implements AuthenticationContract
         $this->client = new Client();
     }
 
-
     protected function setTokenStorage(): Authentication
     {
         $this->tokenStorage = config('psb.token_storage');
+
         return $this;
     }
-
 
     protected function setTokenUrl(): Authentication
     {
         $this->tokenUrl = sprintf('%s/login/cli', config('psb.base_url'));
+
         return $this;
     }
-
 
     protected function setValidateTokenUrl(): Authentication
     {
         $this->validateTokenUrl = sprintf('%s/api/cli/login', config('psb.base_url'));
+
         return $this;
     }
 
     /**
      * open users browser to retrieve token
      */
-    public function  launchBrowser(): void
+    public function launchBrowser(): void
     {
         $browser = app()->make(BrowserContract::class);
         $browser->open($this->tokenUrl);
@@ -85,62 +80,55 @@ class Authentication implements AuthenticationContract
         return $this->client->fetchCliToken($access_token);
     }
 
-
-    public function storeNewToken(String $token): void
+    public function storeNewToken(string $token): void
     {
-        if(!is_dir(dirname($this->tokenStorage)))
-        {
+        if (! is_dir(dirname($this->tokenStorage))) {
             mkdir(dirname($this->tokenStorage));
         }
 
-        File::put($this->tokenStorage,$token);
+        File::put($this->tokenStorage, $token);
     }
 
-
-    public  function check(): bool
+    public function check(): bool
     {
         if (! $this->tokenFileExist()) {
             return false;
         }
-        try{
+        try {
             return $this->tokenIsValid(File::get($this->tokenStorage));
-        } catch(RequestException $e){
+        } catch (RequestException $e) {
             $this->deleteTokenFile();
+
             return false;
         }
     }
-
 
     protected function tokenFileExist(): bool
     {
         return File::isFile($this->tokenStorage);
     }
 
-
-    public  function tokenIsValid(String $token): bool
+    public function tokenIsValid(string $token): bool
     {
         return $this->client->getAuthenticatedUser($token);
     }
-
 
     public function retrieveToken(): string
     {
         try {
             return File::get($this->tokenStorage);
-        } catch(FileNotFoundException $e){
+        } catch (FileNotFoundException $e) {
             return '';
         }
     }
 
     public function logout(): bool
     {
-       return $this->deleteTokenFile();
+        return $this->deleteTokenFile();
     }
 
     protected function deleteTokenFile(): bool
     {
         return unlink($this->tokenStorage);
     }
-
-
 }

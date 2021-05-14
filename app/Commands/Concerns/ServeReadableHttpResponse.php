@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Commands\Concerns;
-
 
 use Illuminate\Http\Client\RequestException;
 
@@ -28,14 +26,14 @@ trait ServeReadableHttpResponse
                 break;
 
             default:
-                return "An error occured";
+                return 'An error occured';
              break;
         }
     }
 
     public function serverError(): string
     {
-        return "Could not complete request. Kindly raise an issue if it persist.";
+        return 'Could not complete request. Kindly raise an issue if it persist.';
     }
 
     public function validationError(RequestException $e)
@@ -45,11 +43,11 @@ trait ServeReadableHttpResponse
 
     public function unauthenticated()
     {
-        return "You are not authenticated to make this request.";
+        return 'You are not authenticated to make this request.';
     }
 
     public function clientError()
     {
-        return "Something went wrong, please try again.";
+        return 'Something went wrong, please try again.';
     }
 }

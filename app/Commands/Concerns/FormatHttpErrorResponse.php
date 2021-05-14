@@ -1,11 +1,8 @@
 <?php
 
-
 namespace App\Commands\Concerns;
 
-
 use Illuminate\Http\Client\RequestException;
-use Illuminate\Support\Str;
 
 trait FormatHttpErrorResponse
 {
@@ -16,18 +13,18 @@ trait FormatHttpErrorResponse
             422 => $this->showValidationError($e),
             401 => $this->showUnauthenticatedError(),
             $e->response->clientError() => $this->showClientError(),
-            default => "An error occurred",
+            default => 'An error occurred',
         };
     }
 
-    public function couldNotConnect()
+    public function couldNotConnect(): void
     {
         $this->error('Could not establish a connection. Kindly check that your computer is connected to the internet.');
     }
 
     protected function showServerError(): string
     {
-        return "Could not complete request. Kindly raise an issue if it persist.";
+        return 'Could not complete request. Kindly raise an issue if it persist.';
     }
 
     protected function showValidationError(RequestException $e)
@@ -37,11 +34,11 @@ trait FormatHttpErrorResponse
 
     protected function showUnauthenticatedError(): string
     {
-        return "You are not authenticated to make this request.";
+        return 'You are not authenticated to make this request.';
     }
 
     protected function showClientError(): string
     {
-        return "Something went wrong, please try again.";
+        return 'Something went wrong, please try again.';
     }
 }
