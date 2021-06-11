@@ -1,18 +1,14 @@
 {
     "name": "phpsandbox/cli",
-    "description": "The Laravel Zero Framework.",
-    "keywords": ["framework", "laravel", "laravel zero", "console", "cli"],
+    "description": "A CLI tool for PHPSandbox.",
+    "keywords": ["phpsandbox", "console", "cli"],
     "homepage": "https://phpsandbox.io",
     "type": "project",
     "license": "MIT",
-    "support": {
-        "issues": "https://github.com/laravel-zero/laravel-zero/issues",
-        "source": "https://github.com/laravel-zero/laravel-zero"
-    },
     "authors": [
         {
-            "name": "Nuno Maduro",
-            "email": "enunomaduro@gmail.com"
+            "name": "PHPSandbox",
+            "email": "hi@phpsandbox.io"
         }
     ],
     "require": {
@@ -29,9 +25,9 @@
     },
     "require-dev": {
         "laravel-zero/framework": "^8.0",
-        "mikey179/vfsstream": "^1.6",
         "mockery/mockery": "^1.4.2",
-        "phpunit/phpunit": "^9.3"
+        "phpunit/phpunit": "^9.3",
+        "friendsofphp/php-cs-fixer": "^2.18"
     },
     "autoload": {
         "psr-4": {
@@ -50,5 +46,8 @@
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
-    "bin": ["builds/psb"]
+    "bin": ["builds/psb"],
+    "scripts":{
+        "fix-style":"php-cs-fixer fix --verbose"
+    }
 }

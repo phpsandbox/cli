@@ -1,10 +1,7 @@
 <?php
 
-
 use App\Services\Validation;
 use Illuminate\Support\Facades\Storage;
-use org\bovigo\vfs\content\LargeFileContent;
-use org\bovigo\vfs\vfsStream;
 use Tests\TestCase;
 
 /**
@@ -12,14 +9,12 @@ use Tests\TestCase;
  */
 class ValidationTest extends TestCase
 {
-
-
     /**
      * @var Validation
      */
     private Validation $validator;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->validator = new Validation();
         $app = $this->createApplication();
@@ -29,81 +24,92 @@ class ValidationTest extends TestCase
     /**
      * @test
      */
-    public function test_composer_is_valid_rule()
+    public function testComposerIsValidRule(): void
     {
-        Storage::makeDirectory("valid_project");
-        Storage::put("valid_project/composer.json", "{}");
+        Storage::makeDirectory('valid_project');
+        Storage::put('valid_project/composer.json', '{}');
 
-        Storage::makeDirectory("invalid_project");
-        Storage::put("invalid_project/composer.json", " ");
+        Storage::makeDirectory('invalid_project');
+        Storage::put('invalid_project/composer.json', ' ');
 
         $this->assertTrue($this->validator->validate(
-           Storage::path("valid_project"),[
-            'composerIsValid'
-        ]));
+            Storage::path('valid_project'),
+            [
+                'composerIsValid',
+            ]
+        ));
 
         $this->assertTrue(count($this->validator->errors()) == 0);
 
         $this->assertFalse($this->validator->validate(
-           Storage::path("invalid_project"),[
-            'composerIsValid'
-        ]));
+            Storage::path('invalid_project'),
+            [
+                'composerIsValid',
+            ]
+        ));
 
         $this->assertTrue(count($this->validator->errors()) == 1);
-
     }
 
-    public function test_file_size_rule()
+    /**
+     * @test
+     */
+    public function fileSizeRule(): void
     {
         /* test will fail for large files. We simulate this by setting max_file_size to negative*/
         config(['psb.max_file_size' => -1]);
 
-        Storage::makeDirectory("project");
-        Storage::put("project/index.zip", "<?php echo 'hello' ?>");
+        Storage::makeDirectory('project');
+        Storage::put('project/index.zip', "<?php echo 'hello' ?>");
 
-        $this->assertFalse($this->validator->validate(Storage::path("project"),[
-            "size,".Storage::path("project/index.zip")
+        $this->assertFalse($this->validator->validate(Storage::path('project'), [
+            'size:' . Storage::path('project/index.zip'),
         ]));
 
         /* test for small files */
 
         config(['psb.max_file_size' => 10]);
 
-        Storage::put("project/hello.zip", "<?php echo 'hello' ?>");
+        Storage::put('project/hello.zip', "<?php echo 'hello' ?>");
 
-        $this->assertTrue($this->validator->validate(Storage::path("project"),[
-            "size,".Storage::path("project/hello.zip")
+        $this->assertTrue($this->validator->validate(Storage::path('project'), [
+            'size:' . Storage::path('project/hello.zip'),
         ]));
-
-
     }
 
-    public function test_has_composer_json_rule()
+    /**
+     * @test
+     */
+    public function hasComposerJsonRule(): void
     {
-        Storage::makeDirectory("valid_project");
-        Storage::put("valid_project/composer.json", "{}");
+        Storage::makeDirectory('valid_project');
+        Storage::put('valid_project/composer.json', '{}');
 
-        Storage::makeDirectory("invalid_project");
+        Storage::makeDirectory('invalid_project');
 
-        $this->assertTrue($this->validator->validate(
-            Storage::path("valid_project"),[
-                'hasComposer'
-            ])
+        $this->assertTrue(
+            $this->validator->validate(
+            Storage::path('valid_project'),
+            [
+                'hasComposer',
+            ]
+        )
         );
         $this->assertCount(0, $this->validator->errors());
 
-        $this->assertFalse($this->validator->validate(
-            Storage::path("invalid_project"), [
-                'hasComposer'
-            ])
+        $this->assertFalse(
+            $this->validator->validate(
+            Storage::path('invalid_project'),
+            [
+                'hasComposer',
+            ]
+        )
         );
 
         $this->assertTrue(count($this->validator->errors()) > 0);
-
     }
 
-
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         $this->validator = new Validation();
         $app = null;

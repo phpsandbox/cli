@@ -29,9 +29,8 @@ class LogoutCommand extends Command
      */
     public function handle(AuthenticationContract $auth)
     {
-        $this->task('Logging out user',function() use ($auth){
-            if (!$auth->check()) {
-
+        $this->task('Logging out user', function () use ($auth) {
+            if (! $auth->check()) {
                 $this->info('No authenticated user found');
 
                 return true;
@@ -45,14 +44,4 @@ class LogoutCommand extends Command
         });
     }
 
-    /**
-     * Define the command's schedule.
-     *
-     * @param Schedule $schedule
-     * @return void
-     */
-    public function schedule(Schedule $schedule): void
-    {
-        // $schedule->command(static::class)->everyMinute();
-    }
 }

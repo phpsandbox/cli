@@ -12,11 +12,10 @@ return [
      |
      */
 
-    'token_storage' => implode(DIRECTORY_SEPARATOR
-                                    ,[$_SERVER['HOME'] ?? $_SERVER['USERPROFILE']
-                                    , '.phpsandbox'
-                                    , 'token'
-                            ]),
+    'token_storage' => implode(DIRECTORY_SEPARATOR, [$_SERVER['HOME'] ?? $_SERVER['USERPROFILE']
+        , '.phpsandbox'
+        , 'token',
+    ]),
     /*
      |--------------------------------------------------------------------------
      | Default token storage file
@@ -26,11 +25,10 @@ return [
      |
      */
 
-    'files_storage' => implode(DIRECTORY_SEPARATOR
-            ,[$_SERVER['HOME'] ?? $_SERVER['USERPROFILE']
-                , '.phpsandbox'
-                , 'files'
-        ]),
+    'files_storage' => implode(DIRECTORY_SEPARATOR, [$_SERVER['HOME'] ?? $_SERVER['USERPROFILE']
+        , '.phpsandbox'
+        , 'files',
+    ]),
     /*
     |--------------------------------------------------------------------------
     | Retrieve authenticated user
@@ -51,6 +49,6 @@ return [
     'ignore_files' => [
         'vendor',
         'node_modules',
-        '.git'
-    ]
+        '.git',
+    ],
 ];

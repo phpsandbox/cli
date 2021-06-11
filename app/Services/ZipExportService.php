@@ -13,20 +13,19 @@ use RecursiveDirectoryIterator;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\Gitignore;
 
-
 class ZipExportService implements ZipExportContract
 {
     protected array $ignoreFiles = [];
 
     protected ZipFile $zipper;
 
-    protected  string $fileStoragePath;
+    protected string $fileStoragePath;
 
     private Client $client;
 
     protected string $gitDir = '.git';
 
-    protected  string $path;
+    protected string $path;
 
     public function __construct()
     {
@@ -41,7 +40,7 @@ class ZipExportService implements ZipExportContract
         $this->fileStoragePath = config('psb.files_storage');
     }
 
-    public function compress(): bool|string
+    public function compress(): bool | string
     {
         return $this->createZip();
     }
@@ -49,10 +48,11 @@ class ZipExportService implements ZipExportContract
     public function setWorkingDir(?string $path = null): ZipExportService
     {
         $this->path = $path ?? getcwd();
+
         return $this;
     }
 
-    protected function createZip(): bool|string
+    protected function createZip(): bool | string
     {
         $directoryIterator = new RecursiveDirectoryIterator($this->getZipPath());
 
@@ -61,7 +61,7 @@ class ZipExportService implements ZipExportContract
             $this->getExcludedFiles()
         );
 
-        $compressed_file_name = sha1(microtime()).".zip";
+        $compressed_file_name = sha1(microtime()) . '.zip';
 
         $full_file_path = $this->getStoragePath($compressed_file_name);
 
@@ -72,7 +72,7 @@ class ZipExportService implements ZipExportContract
         return $full_file_path;
     }
 
-    public function cleanUp()
+    public function cleanUp(): void
     {
         File::cleanDirectory(config('psb.files_storage'));
     }
@@ -84,14 +84,14 @@ class ZipExportService implements ZipExportContract
 
     protected function getStoragePath($path = ''): string
     {
-      if (!is_dir($this->fileStoragePath)) {
-          mkdir($this->fileStoragePath, 0777, true);
-      }
+        if (! is_dir($this->fileStoragePath)) {
+            mkdir($this->fileStoragePath, 0777, true);
+        }
 
-      return implode(DIRECTORY_SEPARATOR,[$this->fileStoragePath,$path]);
+        return implode(DIRECTORY_SEPARATOR, [$this->fileStoragePath,$path]);
     }
 
-    public function upload($filepath, $token = '')
+    public function upload($filepath, $token = ''): mixed
     {
         return $this->client->uploadCompressedFile($filepath, $token);
     }
@@ -120,17 +120,15 @@ class ZipExportService implements ZipExportContract
         $gitIgnoreFiles = [];
 
         try {
-            $getRegex = Gitignore::toRegex(File::get($this->path.DIRECTORY_SEPARATOR.'.gitignore'));
+            $getRegex = Gitignore::toRegex(File::get($this->path . DIRECTORY_SEPARATOR . '.gitignore'));
 
             $file_paths = $finder->in($this->path)->exclude($this->ignoreFiles)->ignoreVCS(true)->name($getRegex);
 
             foreach (iterator_to_array($file_paths, true) as $file_path) {
-
                 $gitIgnoreFiles[] = $file_path->getRelativePathname();
             }
 
             return $gitIgnoreFiles;
-
         } catch (FileNotFoundException $e) {
             return [];
         }
@@ -138,7 +136,7 @@ class ZipExportService implements ZipExportContract
 
     protected function isGitRepo(): bool
     {
-        return File::isDirectory($this->path.DIRECTORY_SEPARATOR.$this->gitDir);
+        return File::isDirectory($this->path . DIRECTORY_SEPARATOR . $this->gitDir);
     }
 
     protected function getExcludedFiles(): array
