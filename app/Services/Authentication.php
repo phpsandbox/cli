@@ -75,7 +75,7 @@ class Authentication implements AuthenticationContract
         $browser->open($this->tokenUrl);
     }
 
-    public function fetchCliToken($access_token): string
+    public function fetchCliToken(string $access_token): string
     {
         return $this->client->fetchCliToken($access_token);
     }

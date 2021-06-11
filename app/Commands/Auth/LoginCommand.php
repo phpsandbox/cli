@@ -2,12 +2,12 @@
 
 namespace App\Commands\Auth;
 
-use App\Commands\Concerns\FormatHttpErrorResponse;
+use App\Traits\FormatHttpErrorResponse;
 use App\Contracts\AuthenticationContract;
 use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Http\Client\ConnectionException;
-use Illuminate\Http\Client\RequestException;
 use LaravelZero\Framework\Commands\Command;
+use Illuminate\Http\Client\RequestException;
+use Illuminate\Http\Client\ConnectionException;
 
 class LoginCommand extends Command
 {
@@ -89,14 +89,4 @@ class LoginCommand extends Command
         }
     }
 
-    /**
-     * Define the command's schedule.
-     *
-     * @param Schedule $schedule
-     * @return void
-     */
-    public function schedule(Schedule $schedule): void
-    {
-        // $schedule->command(static::class)->everyMinute();
-    }
 }

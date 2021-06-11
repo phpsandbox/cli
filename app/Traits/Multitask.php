@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Commands\Concerns;
+namespace App\Traits;
 
 use Closure;
 

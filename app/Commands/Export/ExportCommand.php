@@ -2,17 +2,18 @@
 
 namespace App\Commands\Export;
 
-use App\Commands\Concerns\FormatHttpErrorResponse;
-use App\Commands\Concerns\Multitask;
-use App\Contracts\AuthenticationContract;
-use App\Contracts\ZipExportContract;
+
+use App\Traits\Multitask;
 use App\Services\Validation;
-use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Http\Client\ConnectionException;
-use Illuminate\Http\Client\RequestException;
-use Illuminate\Support\Facades\File;
-use LaravelZero\Framework\Commands\Command;
 use PhpZip\Exception\ZipException;
+use App\Contracts\ZipExportContract;
+use Illuminate\Support\Facades\File;
+use App\Traits\FormatHttpErrorResponse;
+use App\Contracts\AuthenticationContract;
+use Illuminate\Console\Scheduling\Schedule;
+use LaravelZero\Framework\Commands\Command;
+use Illuminate\Http\Client\RequestException;
+use Illuminate\Http\Client\ConnectionException;
 
 class ExportCommand extends Command
 {
@@ -34,20 +35,13 @@ class ExportCommand extends Command
 
     private $file_name;
 
-    /**
-     * Execute the console command.
-     *
-     * @param ZipExportContract $zip
-     * @param AuthenticationContract $auth
-     * @param Validation $validate
-     * @return mixed
-     */
+    
     public function handle(
         ZipExportContract $zip,
         AuthenticationContract $auth,
         Validation $validate
     ) {
-        $this->displayDetails($zip);
+        $this->displayDetails();
         $zip->setWorkingDir(getcwd());
 
         if (! $auth->check()) {
@@ -114,7 +108,7 @@ class ExportCommand extends Command
         });
     }
 
-    protected function displayDetails(ZipExportContract $zip): void
+    protected function displayDetails(): void
     {
         $this->line('phpsandbox cli export');
         $content = [
@@ -125,14 +119,4 @@ class ExportCommand extends Command
         $this->table([], collect($content));
     }
 
-    /**
-     * Define the command's schedule.
-     *
-     * @param Schedule $schedule
-     * @return void
-     */
-    public function schedule(Schedule $schedule): void
-    {
-        // $schedule->command(static::class)->everyMinute();
-    }
 }

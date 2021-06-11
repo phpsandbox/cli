@@ -26,7 +26,7 @@ class ExportTest extends TestCase
         $this->mock(ZipExportContract::class, function ($mock): void {
             $mock->shouldReceive('setWorkingDir')->with(getcwd());
             $mock->shouldReceive('compress')->once()->andReturn('filename.zip');
-            $mock->shouldReceive('upload')->once()->andReturn('notebook_details');
+            $mock->shouldReceive('upload')->once()->andReturn(['notebook_details']);
             $mock->shouldReceive('cleanUp')->once();
             $mock->shouldReceive('openNotebook')->once();
         });
@@ -57,7 +57,7 @@ class ExportTest extends TestCase
         $this->mock(ZipExportContract::class, function ($mock): void {
             $mock->shouldReceive('setWorkingDir')->with(getcwd());
             $mock->shouldReceive('compress')->once()->andReturn('filename.zip');
-            $mock->shouldReceive('upload')->once()->andReturn('notebook_details');
+            $mock->shouldReceive('upload')->once()->andReturn(['notebook_details']);
             $mock->shouldReceive('cleanUp')->once();
             $mock->shouldReceive('openNotebook')->once();
         });

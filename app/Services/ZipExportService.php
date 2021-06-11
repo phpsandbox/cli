@@ -91,7 +91,7 @@ class ZipExportService implements ZipExportContract
         return implode(DIRECTORY_SEPARATOR, [$this->fileStoragePath,$path]);
     }
 
-    public function upload($filepath, $token = '')
+    public function upload($filepath, $token = ''): mixed
     {
         return $this->client->uploadCompressedFile($filepath, $token);
     }
