@@ -24,7 +24,8 @@ class ExportCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'export';
+    protected $signature = 'export
+                            {path? : Path to the project you want to export to PHPSandbox}';
 
     /**
      * The description of the command.
@@ -35,14 +36,14 @@ class ExportCommand extends Command
 
     private $file_name;
 
-    
+
     public function handle(
         ZipExportContract $zip,
         AuthenticationContract $auth,
         Validation $validate
     ) {
         $this->displayDetails();
-        $zip->setWorkingDir(getcwd());
+        $zip->setWorkingDir($this->argument('path') ?? getcwd());
 
         if (! $auth->check()) {
             $this->confirm('You are not authenticated, do you want to continue as guest?')
