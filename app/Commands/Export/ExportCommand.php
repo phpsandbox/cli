@@ -75,7 +75,7 @@ class ExportCommand extends Command
             });
 
             $this->tasks('Running pre upload validation', function () use ($validate): bool {
-                if (! $validate->validate(getcwd(), ["size,$this->file_name"])) {
+                if (! $validate->validate(getcwd(), ["size:$this->file_name"])) {
                     $this->validationError($validate->errors());
 
                     return false;
