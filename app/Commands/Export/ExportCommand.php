@@ -2,18 +2,16 @@
 
 namespace App\Commands\Export;
 
-
-use App\Traits\Multitask;
-use App\Services\Validation;
-use PhpZip\Exception\ZipException;
-use App\Contracts\ZipExportContract;
-use Illuminate\Support\Facades\File;
-use App\Traits\FormatHttpErrorResponse;
 use App\Contracts\AuthenticationContract;
-use Illuminate\Console\Scheduling\Schedule;
-use LaravelZero\Framework\Commands\Command;
-use Illuminate\Http\Client\RequestException;
+use App\Contracts\ZipExportContract;
+use App\Services\Validation;
+use App\Traits\FormatHttpErrorResponse;
+use App\Traits\Multitask;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\RequestException;
+use Illuminate\Support\Facades\File;
+use LaravelZero\Framework\Commands\Command;
+use PhpZip\Exception\ZipException;
 
 class ExportCommand extends Command
 {
@@ -32,18 +30,33 @@ class ExportCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Export the current working directory to phpsandbox';
+    protected $description = 'Export a directory to PHPSandbox.';
 
     private $file_name;
 
+    private string $exportDirectory;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->exportDirectory = getcwd();
+    }
 
     public function handle(
         ZipExportContract $zip,
         AuthenticationContract $auth,
         Validation $validate
-    ) {
+    ): void {
+
+        /**
+         * @var $exportDirectory string
+         */
+        if ($exportDirectory = $this->argument('path')) {
+            $this->exportDirectory = $exportDirectory;
+        }
+
         $this->displayDetails();
-        $zip->setWorkingDir($this->argument('path') ?? getcwd());
+        $zip->setWorkingDir($this->exportDirectory);
 
         if (! $auth->check()) {
             $this->confirm('You are not authenticated, do you want to continue as guest?')
@@ -86,9 +99,9 @@ class ExportCommand extends Command
 
             $this->tasks('Uploading notebook', function () use ($zip, $auth): bool {
                 try {
-                    $notebook_details = $zip->upload($this->file_name, $token = $auth->retrieveToken());
-                    $notebook_url = $zip->openNotebook($notebook_details, $token);
-                    $this->info(sprintf("\nYour notebook has been provisioned at %s", $notebook_url));
+                    $response = $zip->upload($this->file_name, $token = $auth->retrieveToken());
+                    $notebook_url = $zip->openNotebook($response['notebook'], $token);
+                    $this->info(sprintf("\n%s You can access your notebook using this link: %s", $response['message'], $notebook_url));
 
                     return true;
                 } catch (RequestException $e) {
@@ -113,11 +126,10 @@ class ExportCommand extends Command
     {
         $this->line('phpsandbox cli export');
         $content = [
-            ['Exporting directory', getcwd()],
-            ['Number of files', File::countFiles(getcwd(), config('psb.ignore_files'))],
+            ['Exporting directory', $this->exportDirectory],
+            ['Number of files', File::countFiles($this->exportDirectory, config('psb.ignore_files'))],
         ];
 
         $this->table([], collect($content));
     }
-
 }

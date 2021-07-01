@@ -4,4 +4,4 @@
 .phpunit.result.cache
 .env
 storage/*
-
+.php_cs.cache
