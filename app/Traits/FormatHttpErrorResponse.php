@@ -6,13 +6,13 @@ use Illuminate\Http\Client\RequestException;
 
 trait FormatHttpErrorResponse
 {
-    public function showError(RequestException $e): string
+    public function showError(RequestException $e, string $errorMsg = ''): string
     {
         return match ($e->getCode()) {
             $e->response->serverError() => $this->showServerError(),
             422 => $this->showValidationError($e),
             401 => $this->showUnauthenticatedError(),
-            $e->response->clientError() => $this->showClientError(),
+            404 => $this->missingResource($errorMsg),
             default => 'An error occurred',
         };
     }
@@ -37,8 +37,8 @@ trait FormatHttpErrorResponse
         return 'You are not authenticated to make this request.';
     }
 
-    protected function showClientError(): string
+    protected function missingResource(string $errorMsg = ''): string
     {
-        return 'Something went wrong, please try again.';
+        return $errorMsg == '' ? 'Something went wrong, please try again.' : $errorMsg;
     }
 }

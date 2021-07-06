@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use Closure;
 use Illuminate\Config\Repository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Client\PendingRequest;
@@ -82,6 +83,14 @@ class Client
         $response = $this->withMainHeaders()->authenticateAs($token)->getClient()->get($this->fetchAuthUserUrl);
 
         return $response->throw()->successful();
+    }
+
+    public function downloadNotebook(string $uniqueId, Closure $progressCallback)
+    {
+        return $this->withMainHeaders()->getClient()->withOptions([
+            'sink' => config('psb.files_storage')."/$uniqueId.zip",
+            'progress' => $progressCallback
+        ])->get("/notebook/download/$uniqueId")->throw()->body();
     }
 
     public function uploadCompressedFile($file_path, $token)
