@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Tests\Unit\Services;
-
 
 use App\Services\ImportNotebookService;
 use Illuminate\Support\Facades\Http;
@@ -12,21 +10,27 @@ use Tests\TestCase;
 
 class ImportNotebookServiceTest extends TestCase
 {
-    public function test_will_set_storage_directory()
+    /**
+     * @test
+     */
+    public function willSetStorageDirectory(): void
     {
-        $importService = new ImportNotebookService("unique-id");
-        $importService->setStorageDirectory(".");
-        $this->assertSame($importService->getStorageDirectory(), getcwd()."/unique-id");
+        $importService = new ImportNotebookService('unique-id');
+        $importService->setStorageDirectory('.');
+        $this->assertSame($importService->getStorageDirectory(), getcwd() . '/unique-id');
 
         $importService->setStorageDirectory();
-        $this->assertSame($importService->getStorageDirectory(), getcwd()."/unique-id");
+        $this->assertSame($importService->getStorageDirectory(), getcwd() . '/unique-id');
 
         Storage::makeDirectory('sample');
-        $importService->setStorageDirectory(Storage::path("sample"));
-        $this->assertSame($importService->getStorageDirectory(), Storage::path("sample")."/unique-id");
+        $importService->setStorageDirectory(Storage::path('sample'));
+        $this->assertSame($importService->getStorageDirectory(), Storage::path('sample') . '/unique-id');
     }
 
-    public function test_will_downloadNotebookZip()
+    /**
+     * @test
+     */
+    public function willDownloadNotebookZip(): void
     {
         /**
          * Create a dummy zip file
@@ -50,17 +54,19 @@ class ImportNotebookServiceTest extends TestCase
             '*' => Http::response(file_get_contents(Storage::path('sampleZipFiles/sample.zip')), 200),
         ]);
 
-        $importService = new ImportNotebookService("unique-id");
-        $importService->downloadNotebookZip(fn() => null);
+        $importService = new ImportNotebookService('unique-id');
+        $importService->downloadNotebookZip(fn () => null);
 
         /**
          * Test for side effects
          */
         Storage::assertExists('extractToDirectory/unique-id.zip');
-
     }
 
-    public function test_extractFiles()
+    /**
+     * @test
+     */
+    public function extractFiles(): void
     {
         /**
          * Create a dummy zip file
@@ -92,7 +98,5 @@ class ImportNotebookServiceTest extends TestCase
         $this->assertDirectoryExists(Storage::path('extractToDirectory/unique-id'));
         Storage::assertExists('extractToDirectory/unique-id/file1.php');
         $this->assertSame('hello world', Storage::get('extractToDirectory/unique-id/file1.php'));
-
     }
-
 }
