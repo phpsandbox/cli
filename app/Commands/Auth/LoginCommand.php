@@ -5,8 +5,6 @@ namespace App\Commands\Auth;
 use App\Contracts\AuthenticationContract;
 use App\Exceptions\HttpException;
 use App\Traits\FormatHttpErrorResponse;
-use Illuminate\Http\Client\ConnectionException;
-use Illuminate\Http\Client\RequestException;
 use LaravelZero\Framework\Commands\Command;
 
 class LoginCommand extends Command
@@ -60,6 +58,7 @@ class LoginCommand extends Command
             return true;
         } catch (HttpException $e) {
             $this->error($e->getMessage());
+
             return false;
         }
     }

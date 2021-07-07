@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\File;
 class Authentication implements AuthenticationContract
 {
     use FormatHttpErrorResponse;
+
     /**
      * @var Client
      *
@@ -84,7 +85,7 @@ class Authentication implements AuthenticationContract
         try {
             return $this->client->fetchCliToken($access_token);
         } catch (ConnectionException $e) {
-            throw new HttpException("Could not connect to PHPSandbox");
+            throw new HttpException('Could not connect to PHPSandbox');
         } catch (RequestException $e) {
             throw new HttpException($this->formatError($e));
         }
@@ -123,7 +124,7 @@ class Authentication implements AuthenticationContract
         try {
             return $this->client->getAuthenticatedUser($token);
         } catch (ConnectionException $e) {
-            throw new HttpException("Could not connect to PHPSandbox");
+            throw new HttpException('Could not connect to PHPSandbox');
         } catch (RequestException $e) {
             throw new HttpException($this->formatError($e));
         }

@@ -89,21 +89,21 @@ class ValidationTest extends TestCase
 
         $this->assertTrue(
             $this->validator->validate(
-            Storage::path('valid_project'),
-            [
-                'hasComposer',
-            ]
-        )
+                Storage::path('valid_project'),
+                [
+                    'hasComposer',
+                ]
+            )
         );
         $this->assertCount(0, $this->validator->errors());
 
         $this->assertFalse(
             $this->validator->validate(
-            Storage::path('invalid_project'),
-            [
-                'hasComposer',
-            ]
-        )
+                Storage::path('invalid_project'),
+                [
+                    'hasComposer',
+                ]
+            )
         );
 
         $this->assertTrue(count($this->validator->errors()) > 0);

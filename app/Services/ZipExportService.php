@@ -102,7 +102,7 @@ class ZipExportService implements ZipExportContract
         try {
             return $this->client->uploadCompressedFile($filepath, $token);
         } catch (ConnectionException $e) {
-            throw new HttpException("Could not connect to PHPSandbox");
+            throw new HttpException('Could not connect to PHPSandbox');
         } catch (RequestException $e) {
             throw new HttpException($this->formatError($e));
         }

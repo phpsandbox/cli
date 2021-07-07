@@ -2,18 +2,15 @@
 
 namespace App\Commands\Export;
 
-
-use App\Exceptions\HttpException;
-use App\Traits\Multitask;
-use App\Services\Validation;
-use PhpZip\Exception\ZipException;
 use App\Contracts\AuthenticationContract;
 use App\Contracts\ZipExportContract;
+use App\Exceptions\HttpException;
+use App\Services\Validation;
 use App\Traits\FormatHttpErrorResponse;
-use Illuminate\Http\Client\ConnectionException;
-use Illuminate\Http\Client\RequestException;
+use App\Traits\Multitask;
 use Illuminate\Support\Facades\File;
 use LaravelZero\Framework\Commands\Command;
+use PhpZip\Exception\ZipException;
 
 class ExportCommand extends Command
 {
