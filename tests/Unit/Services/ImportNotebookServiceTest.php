@@ -89,7 +89,7 @@ class ImportNotebookServiceTest extends TestCase
          * Run service
          */
         $importService = new ImportNotebookService('unique-id');
-        $importService->setStorageDirectory(Storage::path('extractTodirectory'));
+        $importService->setStorageDirectory(Storage::path('extractToDirectory'));
         $importService->extractFiles();
 
         /**
