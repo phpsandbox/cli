@@ -2,12 +2,11 @@
 
 namespace App\Commands\Auth;
 
-use App\Traits\FormatHttpErrorResponse;
 use App\Contracts\AuthenticationContract;
-use Illuminate\Console\Scheduling\Schedule;
-use LaravelZero\Framework\Commands\Command;
-use Illuminate\Http\Client\RequestException;
+use App\Traits\FormatHttpErrorResponse;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\RequestException;
+use LaravelZero\Framework\Commands\Command;
 
 class LoginCommand extends Command
 {
@@ -88,5 +87,4 @@ class LoginCommand extends Command
             exit;
         }
     }
-
 }

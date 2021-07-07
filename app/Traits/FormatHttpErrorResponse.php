@@ -6,6 +6,17 @@ use Illuminate\Http\Client\RequestException;
 
 trait FormatHttpErrorResponse
 {
+    public function formatError(RequestException $e, string $errorMsg = ''): string
+    {
+        return match ($e->getCode()) {
+            $e->response->serverError() => $this->showServerError(),
+            422 => $this->showValidationError($e),
+            401 => $this->showUnauthenticatedError(),
+            404 => $this->missingResource($errorMsg),
+            default => 'An error occurred',
+        };
+    }
+
     public function showError(RequestException $e, string $errorMsg = ''): string
     {
         return match ($e->getCode()) {

@@ -88,8 +88,8 @@ class Client
     public function downloadNotebook(string $uniqueId, Closure $progressCallback)
     {
         return $this->withMainHeaders()->getClient()->withOptions([
-            'sink' => config('psb.files_storage')."/$uniqueId.zip",
-            'progress' => $progressCallback
+            'sink' => config('psb.files_storage') . "/$uniqueId.zip",
+            'progress' => $progressCallback,
         ])->get("/notebook/download/$uniqueId")->throw()->body();
     }
 

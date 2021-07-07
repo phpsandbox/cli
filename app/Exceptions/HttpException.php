@@ -4,6 +4,6 @@ namespace App\Exceptions;
 
 use Exception;
 
-class InvalidParameterException extends Exception
+class HttpException extends Exception
 {
 }
