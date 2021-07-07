@@ -21,7 +21,7 @@ class ImportNotebookService
 
     private ZipFile $zipper;
 
-    private ?string $storageDirectory;
+    private ?string $storageDirectory = null;
 
     public function __construct(string $notebookUniqueId)
     {
@@ -43,7 +43,7 @@ class ImportNotebookService
 
     public function extractFiles(): void
     {
-        $this->zipper->openFile($this->zipFileLocation())->extractTo($this->storageDirectory);
+        $this->zipper->openFile($this->zipFileLocation())->extractTo($this->getStorageDirectory());
     }
 
     private function zipFileLocation(): string
@@ -55,7 +55,7 @@ class ImportNotebookService
         );
     }
 
-    public function setStorageDirectory(?string $storageDirectory): bool
+    public function setStorageDirectory(?string $storageDirectory = null): bool
     {
         if ($storageDirectory == '.' || $storageDirectory === null) {
             $storageDirectory = getcwd();
@@ -72,5 +72,10 @@ class ImportNotebookService
         });
 
         return true;
+    }
+
+    public function getStorageDirectory(): ?string
+    {
+        return $this->storageDirectory;
     }
 }
