@@ -39,7 +39,7 @@ class ImportNotebookCommandTest extends TestCase
         /**
          * Call the artisan command
          */
-        $this->artisan("import $notebookUniqueId --store=" . Storage::path('extractToDirectory'))
+        $this->artisan("import $notebookUniqueId --path=" . Storage::path('extractToDirectory'))
             ->expectsOutput('Importing notebook from PHPsandbox : starting')
             ->expectsOutput('Verify extraction directory: ✔')
             ->expectsOutput('Downloading notebook: loading...')
@@ -61,7 +61,7 @@ class ImportNotebookCommandTest extends TestCase
     public function willNotExportIfTheStorageDirectoryProvidedIsNotValid(): void
     {
         $notebookUniqueId = 'unique-id';
-        $this->artisan("import $notebookUniqueId -s someFakeDirectory")
+        $this->artisan("import $notebookUniqueId -p someFakeDirectory")
             ->expectsOutput('Verify extraction directory: loading...')
             ->expectsOutput('The directory does not exist')
             ->expectsOutput('Verify extraction directory: failed')

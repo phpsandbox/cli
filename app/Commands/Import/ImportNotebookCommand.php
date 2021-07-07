@@ -21,7 +21,7 @@ class ImportNotebookCommand extends Command
      */
     protected $signature = 'import
                             {notebookId : The unique ID of the notebook being imported}
-                            {--s|store= : The directory where the notebook content should be stored}';
+                            {--p|path= : The directory where the notebook content should be stored}';
 
     public static bool $importStarted = false;
 
@@ -39,7 +39,7 @@ class ImportNotebookCommand extends Command
         $this->multiTask('Importing notebook from PHPsandbox', function () use ($importService): void {
             $this->tasks('Verify extraction directory', function () use ($importService) {
                 try {
-                    $importService->setStorageDirectory($this->option('store'));
+                    $importService->setStorageDirectory($this->option('path'));
                 } catch (InvalidParameterException $e) {
                     $this->newLine();
                     $this->error($e->getMessage());
