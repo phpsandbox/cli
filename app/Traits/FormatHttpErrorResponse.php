@@ -17,17 +17,6 @@ trait FormatHttpErrorResponse
         };
     }
 
-    public function showError(RequestException $e, string $errorMsg = ''): string
-    {
-        return match ($e->getCode()) {
-            $e->response->serverError() => $this->showServerError(),
-            422 => $this->showValidationError($e),
-            401 => $this->showUnauthenticatedError(),
-            404 => $this->missingResource($errorMsg),
-            default => 'An error occurred',
-        };
-    }
-
     public function couldNotConnect(): void
     {
         $this->error('Could not establish a connection. Kindly check that your computer is connected to the internet.');

@@ -4,8 +4,12 @@ namespace App\Services;
 
 use App\Contracts\BrowserContract;
 use App\Contracts\ZipExportContract;
+use App\Exceptions\HttpException;
 use App\Http\Client;
+use App\Traits\FormatHttpErrorResponse;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\File;
 use PhpZip\Util\Iterator\IgnoreFilesRecursiveFilterIterator;
 use PhpZip\ZipFile;
@@ -15,6 +19,8 @@ use Symfony\Component\Finder\Gitignore;
 
 class ZipExportService implements ZipExportContract
 {
+    use FormatHttpErrorResponse;
+
     protected array $ignoreFiles = [];
 
     protected ZipFile $zipper;
@@ -93,7 +99,13 @@ class ZipExportService implements ZipExportContract
 
     public function upload($filepath, $token = ''): mixed
     {
-        return $this->client->uploadCompressedFile($filepath, $token);
+        try {
+            return $this->client->uploadCompressedFile($filepath, $token);
+        } catch (ConnectionException $e) {
+            throw new HttpException("Could not connect to PHPSandbox");
+        } catch (RequestException $e) {
+            throw new HttpException($this->formatError($e));
+        }
     }
 
     protected function getNotebookUrl(array $details, $token): string

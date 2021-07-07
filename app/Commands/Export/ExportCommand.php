@@ -3,6 +3,7 @@
 namespace App\Commands\Export;
 
 
+use App\Exceptions\HttpException;
 use App\Traits\Multitask;
 use App\Services\Validation;
 use PhpZip\Exception\ZipException;
@@ -35,7 +36,7 @@ class ExportCommand extends Command
 
     private $file_name;
 
-    
+
     public function handle(
         ZipExportContract $zip,
         AuthenticationContract $auth,
@@ -90,11 +91,10 @@ class ExportCommand extends Command
                     $this->info(sprintf("\nYour notebook has been provisioned at %s", $notebook_url));
 
                     return true;
-                } catch (RequestException $e) {
-                    $this->error($this->showError($e));
-                } catch (ConnectionException $e) {
-                    $this->couldNotConnect();
+                } catch (HttpException $e) {
+                    $this->error($e->getMessage());
                 }
+
                 $zip->cleanUp();
 
                 return false;
