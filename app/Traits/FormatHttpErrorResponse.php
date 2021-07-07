@@ -8,18 +8,21 @@ trait FormatHttpErrorResponse
 {
     public function formatError(RequestException $e, string $errorMsg = ''): string
     {
-        return match ($e->getCode()) {
-            $e->response->serverError() => $this->showServerError(),
-            422 => $this->showValidationError($e),
-            401 => $this->showUnauthenticatedError(),
-            404 => $this->missingResource($errorMsg),
-            default => 'An error occurred',
-        };
-    }
-
-    public function couldNotConnect(): void
-    {
-        $this->error('Could not establish a connection. Kindly check that your computer is connected to the internet.');
+         switch($e->getCode()) {
+            case $e->response->serverError() :
+                return $this->showServerError();
+                break;
+            case 422 :
+                return  $this->showValidationError($e);
+                break;
+            case 401 :
+                return $this->showUnauthenticatedError();
+                break;
+            case 404 :
+                return $this->missingResource($errorMsg);
+                break;
+            default  : return 'An error occurred';
+        }
     }
 
     protected function showServerError(): string

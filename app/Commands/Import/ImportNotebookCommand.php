@@ -7,6 +7,8 @@ use App\Exceptions\InvalidParameterException;
 use App\Services\ImportNotebookService;
 use App\Traits\FormatHttpErrorResponse;
 use App\Traits\Multitask;
+use Closure;
+use CurlHandle;
 use Exception;
 use LaravelZero\Framework\Commands\Command;
 
@@ -70,9 +72,9 @@ class ImportNotebookCommand extends Command
         });
     }
 
-    public function progressBar()
+    public function progressBar(): Closure
     {
-        return function ($downloadTotal, $downloadedBytes): void {
+        return function (CurlHandle $downloadTotal, int $downloadedBytes): void {
             if (self::$importStarted) {
                 $this->output->progressAdvance((int) $downloadedBytes);
             } else {

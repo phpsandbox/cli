@@ -37,6 +37,9 @@ class ImportNotebookService
         } catch (ConnectionException $e) {
             throw new HttpException('Could not connect to PHPSandbox. Make sure you are connected to the internet.');
         } catch (RequestException $e) {
+            if ($e->getCode() == 404) {
+                throw new HttpException($this->formatError($e, "Invalid notebook ID"));
+            }
             throw new HttpException($this->formatError($e));
         }
     }
