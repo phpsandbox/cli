@@ -72,10 +72,9 @@ class ImportNotebookCommand extends Command
 
             $this->tasks('Installing dependencies', function () use ($importService) {
                 try {
-                    $importService->runComposerInstall();
+                    return $importService->runComposerInstall();
                 } catch (Exception $e) {
-                    $this->error('An error occurred while extracting the notebook content.');
-
+                    $this->error('An error occurred while installing composer dependencies.');
                     return false;
                 }
             });
