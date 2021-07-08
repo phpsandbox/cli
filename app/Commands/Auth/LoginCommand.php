@@ -3,8 +3,8 @@
 namespace App\Commands\Auth;
 
 use App\Contracts\AuthenticationContract;
-use App\Traits\FormatHttpErrorResponse;
 use App\Exceptions\HttpException;
+use App\Traits\FormatHttpErrorResponse;
 use LaravelZero\Framework\Commands\Command;
 
 class LoginCommand extends Command
