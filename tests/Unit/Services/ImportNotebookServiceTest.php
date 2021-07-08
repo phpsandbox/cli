@@ -99,4 +99,19 @@ class ImportNotebookServiceTest extends TestCase
         Storage::assertExists('extractToDirectory/unique-id/file1.php');
         $this->assertSame('hello world', Storage::get('extractToDirectory/unique-id/file1.php'));
     }
+
+    /**
+     * @test
+     */
+    public function willRunComposerInstall(): void
+    {
+        Storage::put('sample/composer.json', '{}');
+        config(['psb.files_storage' => Storage::path('sample')]);
+
+        $importService = new ImportNotebookService('sample');
+        $importService->setStorageDirectory(Storage::path('/'));
+        $importService->runComposerInstall();
+
+        $this->assertDirectoryExists(Storage::path('sample/vendor'));
+    }
 }

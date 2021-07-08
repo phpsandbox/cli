@@ -39,9 +39,9 @@ class ImportNotebookCommand extends Command
         $importService = new ImportNotebookService($this->argument('notebookId'));
 
         $this->multiTask('Importing notebook from PHPsandbox', function () use ($importService): void {
-            $this->tasks('Verify extraction directory', function () use ($importService) {
+            $this->tasks('Verify extraction directory', function () use ($importService): bool {
                 try {
-                    $importService->setStorageDirectory($this->option('path'));
+                    return $importService->setStorageDirectory($this->option('path'));
                 } catch (InvalidParameterException $e) {
                     $this->newLine();
                     $this->error($e->getMessage());
@@ -50,9 +50,11 @@ class ImportNotebookCommand extends Command
                 }
             });
 
-            $this->tasks('Downloading notebook', function () use ($importService) {
+            $this->tasks('Downloading notebook', function () use ($importService): bool {
                 try {
                     $importService->downloadNotebookZip($this->progressBar());
+
+                    return true;
                 } catch (HttpException $e) {
                     $this->error($e->getMessage());
 
@@ -60,9 +62,11 @@ class ImportNotebookCommand extends Command
                 }
             });
 
-            $this->tasks('Extracting notebook', function () use ($importService) {
+            $this->tasks('Extracting notebook', function () use ($importService): bool {
                 try {
                     $importService->extractFiles();
+
+                    return true;
                 } catch (Exception $e) {
                     $this->error('An error occurred while extracting the notebook content.');
 
@@ -70,15 +74,15 @@ class ImportNotebookCommand extends Command
                 }
             });
 
-            $this->tasks('Installing dependencies', function () use ($importService) {
+            $this->tasks('Installing dependencies', function () use ($importService): bool {
                 try {
                     return $importService->runComposerInstall();
                 } catch (Exception $e) {
                     $this->error('An error occurred while installing composer dependencies.');
+
                     return false;
                 }
             });
-
         });
     }
 

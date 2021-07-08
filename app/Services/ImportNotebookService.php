@@ -38,8 +38,9 @@ class ImportNotebookService
             throw new HttpException('Could not connect to PHPSandbox. Make sure you are connected to the internet.');
         } catch (RequestException $e) {
             if ($e->getCode() == 404) {
-                throw new HttpException($this->formatError($e, "Invalid notebook ID"));
+                throw new HttpException($this->formatError($e, 'Invalid notebook ID'));
             }
+
             throw new HttpException($this->formatError($e));
         }
     }
@@ -84,10 +85,12 @@ class ImportNotebookService
 
     public function runComposerInstall(): bool
     {
-        if (file_exists($this->getStorageDirectory()."/composer.json")) {
-            exec("cd {$this->getStorageDirectory()}; composer ", $output, $exitCode);
+        if (file_exists($this->getStorageDirectory() . '/composer.json')) {
+            exec("cd {$this->getStorageDirectory()}; composer install", $output, $exitCode);
+
             return $exitCode == 0;
         }
+
         return true;
-     }
+    }
 }

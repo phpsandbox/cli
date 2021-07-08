@@ -22,6 +22,7 @@ class ImportNotebookCommandTest extends TestCase
         Storage::makeDirectory('extractToDirectory');
         Storage::makeDirectory('sampleZipFiles');
         Storage::put('sampleFiles/file1.php', 'hello world');
+        Storage::put('sampleFiles/composer.json', '{}');
 
         (new ZipFile())->addDir(Storage::path('sampleFiles'))
             ->saveAsFile(Storage::path('sampleZipFiles') . '/sample.zip');
@@ -53,6 +54,8 @@ class ImportNotebookCommandTest extends TestCase
         $this->assertDirectoryExists(Storage::path('extractToDirectory/unique-id'));
         Storage::assertExists('extractToDirectory/unique-id/file1.php');
         $this->assertSame('hello world', Storage::get('extractToDirectory/unique-id/file1.php'));
+        Storage::assertExists('extractToDirectory/unique-id/composer.json');
+        $this->assertDirectoryExists(Storage::path('extractToDirectory/unique-id/vendor'));
     }
 
     /**
