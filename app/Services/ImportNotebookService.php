@@ -81,4 +81,11 @@ class ImportNotebookService
     {
         return $this->storageDirectory;
     }
+
+    public function runComposerInstall()
+    {
+        if (file_exists($this->getStorageDirectory()."/composer.json")) {
+            shell_exec("cd {$this->getStorageDirectory()}; composer install");
+        }
+     }
 }
