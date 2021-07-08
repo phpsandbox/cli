@@ -3,6 +3,7 @@
 namespace App\Commands\Config;
 
 use Illuminate\Support\Facades\File;
+use JsonException;
 use LaravelZero\Framework\Commands\Command;
 
 class Init extends Command
@@ -48,15 +49,26 @@ class Init extends Command
             File::put($this->configFileLocation(), '{}');
         }
 
-        $config = json_decode(File::get($this->configFileLocation()), true);
+        try {
+            $config = json_decode(
+                File::get($this->configFileLocation()),
+                true,
+                1,
+                JSON_THROW_ON_ERROR
+            );
 
-        $config['template'] = $template;
+            $config['template'] = $template;
 
-        File::put($this->configFileLocation(), json_encode($config));
+            File::put($this->configFileLocation(), json_encode($config));
+        } catch (JsonException $e) {
+            $this->error("Invalid configuration file");
+            return Command::FAILURE;
+        }
+
     }
 
     private function configFileLocation(): string
     {
-        return sprintf('%s/%s', getcwd(), self::CONFIG_FILE_NAME);
+        return sprintf('%s/%s', config("psb.config_file_storage"), self::CONFIG_FILE_NAME);
     }
 }
