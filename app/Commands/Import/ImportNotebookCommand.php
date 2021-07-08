@@ -69,6 +69,17 @@ class ImportNotebookCommand extends Command
                     return false;
                 }
             });
+
+            $this->tasks('Installing dependencies', function () use ($importService) {
+                try {
+                    $importService->runComposerInstall();
+                } catch (Exception $e) {
+                    $this->error('An error occurred while extracting the notebook content.');
+
+                    return false;
+                }
+            });
+
         });
     }
 
