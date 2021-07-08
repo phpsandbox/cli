@@ -74,10 +74,13 @@ class Authentication implements AuthenticationContract
     /**
      * open users browser to retrieve token
      */
-    public function launchBrowser(): void
+    public function launchBrowser(): string
     {
         $browser = app()->make(BrowserContract::class);
-        $browser->open($this->tokenUrl);
+
+        return tap($this->tokenUrl, function () use ($browser): void {
+            $browser->open($this->tokenUrl);
+        });
     }
 
     public function fetchCliToken(string $access_token): string

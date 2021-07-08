@@ -35,11 +35,13 @@ class LoginCommand extends Command
     {
         $this->task('Authenticating', function () use ($auth) {
             if (! $auth->check()) {
-                $this->triggerNewLogin($auth);
+                if ($this->triggerNewLogin($auth)) {
+                    $token = $auth->retrieveToken();
 
-                $token = $auth->retrieveToken();
+                    return $this->tokenValidation($auth, $token);
+                }
 
-                return $this->tokenValidation($auth, $token);
+                return false;
             }
 
             $this->info('Already authenticated');
@@ -63,21 +65,28 @@ class LoginCommand extends Command
         }
     }
 
-    protected function triggerNewLogin(AuthenticationContract  $auth): void
+    protected function triggerNewLogin(AuthenticationContract  $auth): bool
     {
         if ($this->option('token') != null) {
             $access_token = $this->option('token');
         } else {
+            $this->newLine();
             $this->info('You would be redirected to your browser to obtain your access token.');
-            $auth->launchBrowser();
+            tap($auth->launchBrowser(), function ($url): void {
+                $this->info("In case you were not redirected, visit $url to access your CLI access code");
+            });
             $access_token = $this->ask('Enter the authentication token generated from the browser');
         }
 
         try {
             $token = $auth->fetchCliToken($access_token);
             $auth->storeNewToken($token);
+
+            return true;
         } catch (HttpException $e) {
             $this->error($e->getMessage());
+
+            return false;
         }
     }
 }

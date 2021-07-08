@@ -3,25 +3,26 @@
 namespace App\Traits;
 
 use Illuminate\Http\Client\RequestException;
+use Illuminate\Support\Arr;
 
 trait FormatHttpErrorResponse
 {
     public function formatError(RequestException $e, string $errorMsg = ''): string
     {
-         switch($e->getCode()) {
-            case $e->response->serverError() :
+        switch ($e->getCode()) {
+            case $e->response->serverError():
                 return $this->showServerError();
                 break;
-            case 422 :
+            case 422:
                 return  $this->showValidationError($e);
                 break;
-            case 401 :
+            case 401:
                 return $this->showUnauthenticatedError();
                 break;
-            case 404 :
+            case 404:
                 return $this->missingResource($errorMsg);
                 break;
-            default  : return 'An error occurred';
+            default: return 'An error occurred';
         }
     }
 
@@ -30,9 +31,14 @@ trait FormatHttpErrorResponse
         return 'Could not complete request. Kindly raise an issue if it persist.';
     }
 
-    protected function showValidationError(RequestException $e)
+    protected function showValidationError(RequestException $e): string
     {
-        return $e->getMessage();
+        $getErrors = collect(Arr::get($e->response->json(), 'errors'));
+        $getErrors = $getErrors->map(function (array $errors, string $index) {
+            return $errors;
+        })->flatten(1)->toArray();
+
+        return implode("\n", $getErrors);
     }
 
     protected function showUnauthenticatedError(): string
