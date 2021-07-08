@@ -61,14 +61,14 @@ class Init extends Command
 
             File::put($this->configFileLocation(), json_encode($config));
         } catch (JsonException $e) {
-            $this->error("Invalid configuration file");
+            $this->error('Invalid configuration file');
+
             return Command::FAILURE;
         }
-
     }
 
     private function configFileLocation(): string
     {
-        return sprintf('%s/%s', config("psb.config_file_storage"), self::CONFIG_FILE_NAME);
+        return sprintf('%s/%s', config('psb.config_file_storage'), self::CONFIG_FILE_NAME);
     }
 }

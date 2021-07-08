@@ -8,20 +8,20 @@ trait FormatHttpErrorResponse
 {
     public function formatError(RequestException $e, string $errorMsg = ''): string
     {
-         switch($e->getCode()) {
-            case $e->response->serverError() :
+        switch ($e->getCode()) {
+            case $e->response->serverError():
                 return $this->showServerError();
                 break;
-            case 422 :
+            case 422:
                 return  $this->showValidationError($e);
                 break;
-            case 401 :
+            case 401:
                 return $this->showUnauthenticatedError();
                 break;
-            case 404 :
+            case 404:
                 return $this->missingResource($errorMsg);
                 break;
-            default  : return 'An error occurred';
+            default: return 'An error occurred';
         }
     }
 

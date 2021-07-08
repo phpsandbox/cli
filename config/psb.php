@@ -59,6 +59,6 @@ return [
     |
     |
     */
-    'config_file_storage' => getcwd()
+    'config_file_storage' => getcwd(),
 
 ];
