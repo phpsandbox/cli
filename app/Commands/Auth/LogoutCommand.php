@@ -3,7 +3,6 @@
 namespace App\Commands\Auth;
 
 use App\Contracts\AuthenticationContract;
-use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 
 class LogoutCommand extends Command
@@ -43,5 +42,4 @@ class LogoutCommand extends Command
             return true;
         });
     }
-
 }

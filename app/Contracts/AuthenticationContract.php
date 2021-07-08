@@ -17,5 +17,4 @@ interface AuthenticationContract
     public function storeNewToken(string $token): void;
 
     public function logout(): bool;
-
 }
