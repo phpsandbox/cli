@@ -4,8 +4,7 @@ namespace App\Commands\Auth;
 
 use App\Contracts\AuthenticationContract;
 use App\Traits\FormatHttpErrorResponse;
-use Illuminate\Http\Client\ConnectionException;
-use Illuminate\Http\Client\RequestException;
+use App\Exceptions\HttpException;
 use LaravelZero\Framework\Commands\Command;
 
 class LoginCommand extends Command
@@ -57,13 +56,11 @@ class LoginCommand extends Command
                 : $this->error('Token could not be validated.');
 
             return true;
-        } catch (ConnectionException $e) {
-            $this->couldNotConnect();
-        } catch (RequestException $e) {
-            $this->error($this->serveError($e));
-        }
+        } catch (HttpException $e) {
+            $this->error($e->getMessage());
 
-        return false;
+            return false;
+        }
     }
 
     protected function triggerNewLogin(AuthenticationContract  $auth): void
@@ -79,12 +76,8 @@ class LoginCommand extends Command
         try {
             $token = $auth->fetchCliToken($access_token);
             $auth->storeNewToken($token);
-        } catch (ConnectionException $e) {
-            $this->couldNotConnect();
-            exit;
-        } catch (RequestException $e) {
-            $this->error($this->showError($e));
-            exit;
+        } catch (HttpException $e) {
+            $this->error($e->getMessage());
         }
     }
 }

@@ -4,8 +4,11 @@ namespace App\Services;
 
 use App\Contracts\AuthenticationContract;
 use App\Contracts\BrowserContract;
+use App\Exceptions\HttpException;
 use App\Http\Client;
+use App\Traits\FormatHttpErrorResponse;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\File;
 
@@ -14,6 +17,8 @@ use Illuminate\Support\Facades\File;
  */
 class Authentication implements AuthenticationContract
 {
+    use FormatHttpErrorResponse;
+
     /**
      * @var Client
      *
@@ -77,7 +82,13 @@ class Authentication implements AuthenticationContract
 
     public function fetchCliToken(string $access_token): string
     {
-        return $this->client->fetchCliToken($access_token);
+        try {
+            return $this->client->fetchCliToken($access_token);
+        } catch (ConnectionException $e) {
+            throw new HttpException('Could not connect to PHPSandbox');
+        } catch (RequestException $e) {
+            throw new HttpException($this->formatError($e));
+        }
     }
 
     public function storeNewToken(string $token): void
@@ -110,7 +121,13 @@ class Authentication implements AuthenticationContract
 
     public function tokenIsValid(string $token): bool
     {
-        return $this->client->getAuthenticatedUser($token);
+        try {
+            return $this->client->getAuthenticatedUser($token);
+        } catch (ConnectionException $e) {
+            throw new HttpException('Could not connect to PHPSandbox');
+        } catch (RequestException $e) {
+            throw new HttpException($this->formatError($e));
+        }
     }
 
     public function retrieveToken(): string

@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use Closure;
 use Illuminate\Config\Repository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Client\PendingRequest;
@@ -70,21 +71,29 @@ class Client
         $this->fetchAuthUserUrl = '/user';
     }
 
-    public function fetchCliToken($access_token): string
+    public function fetchCliToken(string $access_token): string
     {
         $response = $this->withMainHeaders()->getClient()->post($this->fetchCliTokenUrl, ['code' => $access_token]);
 
         return $response->throw()->json()['token'];
     }
 
-    public function getAuthenticatedUser($token): bool
+    public function getAuthenticatedUser(string $token): bool
     {
         $response = $this->withMainHeaders()->authenticateAs($token)->getClient()->get($this->fetchAuthUserUrl);
 
         return $response->throw()->successful();
     }
 
-    public function uploadCompressedFile($file_path, $token)
+    public function downloadNotebook(string $uniqueId, Closure $progressCallback): string
+    {
+        return $this->withMainHeaders()->getClient()->withOptions([
+            'sink' => config('psb.files_storage') . "/$uniqueId.zip",
+            'progress' => $progressCallback,
+        ])->get("/notebook/download/$uniqueId")->throw()->body();
+    }
+
+    public function uploadCompressedFile(string $file_path, string $token): array
     {
         $client = $token != ''
             ? $this->authenticateAs($token)->getClient()

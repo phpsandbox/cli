@@ -4,11 +4,10 @@ namespace App\Commands\Export;
 
 use App\Contracts\AuthenticationContract;
 use App\Contracts\ZipExportContract;
+use App\Exceptions\HttpException;
 use App\Services\Validation;
 use App\Traits\FormatHttpErrorResponse;
 use App\Traits\Multitask;
-use Illuminate\Http\Client\ConnectionException;
-use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\File;
 use LaravelZero\Framework\Commands\Command;
 use PhpZip\Exception\ZipException;
@@ -104,11 +103,10 @@ class ExportCommand extends Command
                     $this->info(sprintf("\n%s You can access your notebook using this link: %s", $response['message'], $notebook_url));
 
                     return true;
-                } catch (RequestException $e) {
-                    $this->error($this->showError($e));
-                } catch (ConnectionException $e) {
-                    $this->couldNotConnect();
+                } catch (HttpException $e) {
+                    $this->error($e->getMessage());
                 }
+
                 $zip->cleanUp();
 
                 return false;

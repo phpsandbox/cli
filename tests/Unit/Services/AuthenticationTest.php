@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services;
 
+use App\Exceptions\HttpException;
 use App\Services\Authentication;
 use App\Services\BrowserService;
 use Illuminate\Support\Facades\Http;
@@ -56,7 +57,7 @@ class AuthenticationTest extends TestCase
      */
     public function invalidTokenIsInvalid(): void
     {
-        $this->expectException(\Illuminate\Http\Client\RequestException::class);
+        $this->expectException(HttpException::class);
         $base_url = config('psb.base_url');
         Http::fake([
             sprintf('%s/api/user', $base_url) => Http::response([''], 401),

@@ -6,20 +6,23 @@ use Illuminate\Http\Client\RequestException;
 
 trait FormatHttpErrorResponse
 {
-    public function showError(RequestException $e): string
+    public function formatError(RequestException $e, string $errorMsg = ''): string
     {
-        return match ($e->getCode()) {
-            $e->response->serverError() => $this->showServerError(),
-            422 => $this->showValidationError($e),
-            401 => $this->showUnauthenticatedError(),
-            $e->response->clientError() => $this->showClientError(),
-            default => 'An error occurred',
-        };
-    }
-
-    public function couldNotConnect(): void
-    {
-        $this->error('Could not establish a connection. Kindly check that your computer is connected to the internet.');
+         switch($e->getCode()) {
+            case $e->response->serverError() :
+                return $this->showServerError();
+                break;
+            case 422 :
+                return  $this->showValidationError($e);
+                break;
+            case 401 :
+                return $this->showUnauthenticatedError();
+                break;
+            case 404 :
+                return $this->missingResource($errorMsg);
+                break;
+            default  : return 'An error occurred';
+        }
     }
 
     protected function showServerError(): string
@@ -37,8 +40,8 @@ trait FormatHttpErrorResponse
         return 'You are not authenticated to make this request.';
     }
 
-    protected function showClientError(): string
+    protected function missingResource(string $errorMsg = ''): string
     {
-        return 'Something went wrong, please try again.';
+        return $errorMsg == '' ? 'Something went wrong, please try again.' : $errorMsg;
     }
 }
