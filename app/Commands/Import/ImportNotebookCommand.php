@@ -78,8 +78,11 @@ class ImportNotebookCommand extends Command
                 try {
                     return $importService->runComposerInstall();
                 } catch (Exception $e) {
+                    $importService->cleanUp();
                     $this->error('An error occurred while installing composer dependencies.');
-
+                    $this->task("Cleaning up", function () use ($importService) {
+                       $importService->cleanUp();
+                    });
                     return false;
                 }
             });
@@ -90,7 +93,7 @@ class ImportNotebookCommand extends Command
 
                     return true;
                 } catch (Exception $e) {
-                    $this->error('An error occurred while installing composer dependencies.');
+                    $this->error('An error occurred running cleanup services.');
 
                     return false;
                 }
