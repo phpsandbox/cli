@@ -9,6 +9,7 @@ use App\Traits\FormatHttpErrorResponse;
 use Closure;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
+use Illuminate\Support\Facades\File;
 use PhpZip\ZipFile;
 
 class ImportNotebookService
@@ -23,11 +24,14 @@ class ImportNotebookService
 
     private ?string $storageDirectory = null;
 
+    private string $workingDir;
+
     public function __construct(string $notebookUniqueId)
     {
         $this->client = new Client();
         $this->notebookUniqueId = $notebookUniqueId;
         $this->zipper = new ZipFile();
+        $this->workingDir = getcwd();
     }
 
     public function downloadNotebookZip(Closure $progressCallback): void
@@ -92,5 +96,14 @@ class ImportNotebookService
         }
 
         return true;
+    }
+
+    public function cleanUp()
+    {
+        /** Return back to the current working directory */
+        exec("cd $this->workingDir");
+
+        /** Delete the downloaded zip file */
+        File::delete($this->zipFileLocation());
     }
 }
