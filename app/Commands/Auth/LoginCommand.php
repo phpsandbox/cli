@@ -75,7 +75,7 @@ class LoginCommand extends Command
             tap($auth->launchBrowser(), function ($url): void {
                 $this->info("In case you were not redirected, visit $url to access your CLI access code.");
             });
-            $access_token = $this->ask('Enter the authentication token generated from the browser');
+            $access_token = $this->ask('Enter the authentication token copied from the browser');
         }
 
         try {
