@@ -98,7 +98,7 @@ class ImportNotebookService
         return true;
     }
 
-    public function cleanUp()
+    public function cleanUp(): void
     {
         /** Return back to the current working directory */
         exec("cd $this->workingDir");
