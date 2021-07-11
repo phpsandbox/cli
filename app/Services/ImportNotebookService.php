@@ -89,7 +89,7 @@ class ImportNotebookService
 
     public function runComposerInstall(): bool
     {
-            exec("cd {$this->getStorageDirectory()}; composer install", $output, $exitCode);
+            exec("cd {$this->getStorageDirectory()} && composer install", $output, $exitCode);
             return $exitCode == 0;
     }
 
