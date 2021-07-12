@@ -64,6 +64,11 @@ class Authentication implements AuthenticationContract
         return $this;
     }
 
+    public function getTokenUrl(): string
+    {
+        return $this->tokenUrl;
+    }
+
     protected function setValidateTokenUrl(): Authentication
     {
         $this->validateTokenUrl = sprintf('%s/api/cli/login', config('psb.base_url'));
@@ -74,13 +79,10 @@ class Authentication implements AuthenticationContract
     /**
      * open users browser to retrieve token
      */
-    public function launchBrowser(): string
+    public function launchBrowser(): void
     {
         $browser = app()->make(BrowserContract::class);
-
-        return tap($this->tokenUrl, function () use ($browser): void {
-            $browser->open($this->tokenUrl);
-        });
+        $browser->open($this->tokenUrl);
     }
 
     public function fetchCliToken(string $access_token): string

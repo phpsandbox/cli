@@ -10,7 +10,7 @@ interface AuthenticationContract
 
     public function retrieveToken(): string;
 
-    public function launchBrowser(): string;
+    public function launchBrowser(): void;
 
     public function fetchCliToken(string $access_token): string;
 
