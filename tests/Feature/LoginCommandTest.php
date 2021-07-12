@@ -55,6 +55,7 @@ class LoginCommandTest extends TestCase
             $mock->shouldReceive('storeNewToken')->once();
             $mock->shouldReceive('retrieveToken')->once()->andReturn('wrongToken');
             $mock->shouldReceive('tokenIsValid')->with('wrongToken')->once()->andReturn(false);
+            $mock->shouldReceive('getTokenUrl')->andReturn('http://phpsandbox/login/cli');
         });
 
         $this->artisan('login')
