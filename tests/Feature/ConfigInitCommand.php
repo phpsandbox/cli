@@ -15,7 +15,7 @@ class ConfigInitCommand extends TestCase
     public function willCreateConfigFile($template): void
     {
         Storage::makeDirectory('sample');
-        config(['psb.config_file_storage' => Storage::path('sample')]);
+        chdir(Storage::path('sample'));
 
         $this->artisan('config:init')
             ->expectsQuestion('Which notebook template will the project be identified as?', $template);

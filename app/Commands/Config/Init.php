@@ -69,6 +69,6 @@ class Init extends Command
 
     private function configFileLocation(): string
     {
-        return sprintf('%s/%s', config('psb.config_file_storage'), self::CONFIG_FILE_NAME);
+        return sprintf('%s/%s', getcwd(), self::CONFIG_FILE_NAME);
     }
 }
