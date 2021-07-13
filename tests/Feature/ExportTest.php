@@ -6,9 +6,7 @@ use App\Contracts\AuthenticationContract;
 use App\Contracts\ZipExportContract;
 use App\Exceptions\HttpException;
 use App\Services\Validation;
-use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
-use Mockery;
 use Tests\TestCase;
 
 class ExportTest extends TestCase
@@ -77,15 +75,18 @@ class ExportTest extends TestCase
             ->assertExitCode(0);
     }
 
-    public function test_will_not_export_if_authentication_fails()
+    /**
+     * @test
+     */
+    public function willNotExportIfAuthenticationFails(): void
     {
-       // Http::fake();
+        // Http::fake();
 
         $this->mock(AuthenticationContract::class, function ($mock): void {
             $mock->shouldReceive('check')->andReturn(false);
             $mock->shouldReceive('launchBrowser')->once();
-            $mock->shouldReceive('fetchCliToken')->once()->andReturnUsing(function () {
-                throw new HttpException("Invalid token");
+            $mock->shouldReceive('fetchCliToken')->once()->andReturnUsing(function (): void {
+                throw new HttpException('Invalid token');
             });
             $mock->shouldReceive('getTokenUrl')->andReturn('http://phpsandbox/login/cli');
         });
@@ -94,7 +95,7 @@ class ExportTest extends TestCase
             ->expectsOutput('Exporting project to phpsandbox : starting')
             ->expectsOutput('Checking for authenticated user: loading...')
             ->expectsConfirmation('You are not authenticated, do you want to continue as guest?', 'no')
-            ->expectsQuestion("Enter the authentication token copied from the browser", "some-random-token")
+            ->expectsQuestion('Enter the authentication token copied from the browser', 'some-random-token')
             ->expectsOutput('Exporting project to phpsandbox : failed')
             ->assertExitCode(0);
     }

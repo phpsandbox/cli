@@ -46,8 +46,6 @@ class ExportCommand extends Command
         AuthenticationContract $auth,
         Validation $validate
     ): void {
-
-
         if ($exportDirectory = $this->argument('path')) {
             $this->exportDirectory = $exportDirectory;
         }
@@ -56,16 +54,17 @@ class ExportCommand extends Command
         $zip->setWorkingDir($this->exportDirectory);
 
         $this->multiTask('Exporting project to phpsandbox', function () use ($auth, $zip, $validate): void {
-
             $this->tasks('Checking for authenticated user', function () use ($auth) {
-                if (!$auth->check()) {
+                if (! $auth->check()) {
                     if ($this->confirm('You are not authenticated, do you want to continue as guest?')) {
                         $this->info('Authenticated as guest');
+
                         return true;
-                    } else {
-                        return ($this->call('login')) == Command::SUCCESS;
                     }
+
+                    return ($this->call('login')) == Command::SUCCESS;
                 }
+
                 return true;
             });
 

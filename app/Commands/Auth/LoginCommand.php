@@ -45,7 +45,6 @@ class LoginCommand extends Command
             }
 
             $this->info('Already authenticated');
-
         });
 
         return $status ? Command::SUCCESS : Command::FAILURE;

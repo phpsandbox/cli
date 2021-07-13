@@ -80,9 +80,10 @@ class ImportNotebookCommand extends Command
                 } catch (Exception $e) {
                     $importService->cleanUp();
                     $this->error('An error occurred while installing composer dependencies.');
-                    $this->task("Cleaning up", function () use ($importService) {
-                       $importService->cleanUp();
+                    $this->task('Cleaning up', function () use ($importService): void {
+                        $importService->cleanUp();
                     });
+
                     return false;
                 }
             });
