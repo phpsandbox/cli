@@ -19,27 +19,22 @@ class Authentication implements AuthenticationContract
 {
     use FormatHttpErrorResponse;
 
-    /**
-     * @var Client
-     *
-     * instance of the client class
-     */
     protected Client  $client;
 
     /**
      *  Default uri to generate token;
      */
-    protected string $tokenUrl;
+    protected  string $tokenUrl = '';
 
     /**
      * Default uri to validate token
      */
-    protected string $validateTokenUrl;
+    protected string $validateTokenUrl = '';
 
     /**
      * Default token storage store
      */
-    protected $tokenStorage;
+    protected string $tokenStorage = '';
 
     public function __construct()
     {
@@ -62,6 +57,11 @@ class Authentication implements AuthenticationContract
         $this->tokenUrl = sprintf('%s/login/cli', config('psb.base_url'));
 
         return $this;
+    }
+
+    public function getTokenUrl(): string
+    {
+        return $this->tokenUrl ?: '';
     }
 
     protected function setValidateTokenUrl(): Authentication

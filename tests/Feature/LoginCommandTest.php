@@ -22,7 +22,7 @@ class LoginCommandTest extends TestCase
         });
 
         $this->artisan('login')
-            ->expectsQuestion('Enter the authentication token generated from the browser', 'randomToken')
+            ->expectsQuestion('Enter the authentication token copied from the browser', 'randomToken')
             ->assertExitCode(0);
     }
 
@@ -55,10 +55,11 @@ class LoginCommandTest extends TestCase
             $mock->shouldReceive('storeNewToken')->once();
             $mock->shouldReceive('retrieveToken')->once()->andReturn('wrongToken');
             $mock->shouldReceive('tokenIsValid')->with('wrongToken')->once()->andReturn(false);
+            $mock->shouldReceive('getTokenUrl')->andReturn('http://phpsandbox/login/cli');
         });
 
         $this->artisan('login')
-            ->expectsQuestion('Enter the authentication token generated from the browser', 'randomToken')
+            ->expectsQuestion('Enter the authentication token copied from the browser', 'randomToken')
             ->expectsOutput('Token could not be validated.')
             ->assertExitCode(0);
     }

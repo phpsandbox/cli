@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use Illuminate\Http\Client\RequestException;
+use Illuminate\Support\Arr;
 
 trait FormatHttpErrorResponse
 {
@@ -30,9 +31,14 @@ trait FormatHttpErrorResponse
         return 'Could not complete request. Kindly raise an issue if it persist.';
     }
 
-    protected function showValidationError(RequestException $e)
+    protected function showValidationError(RequestException $e): string
     {
-        return $e->getMessage();
+        $getErrors = collect(Arr::get($e->response->json(), 'errors'));
+        $getErrors = $getErrors->map(function (array $errors, string $index) {
+            return $errors;
+        })->flatten(1)->toArray();
+
+        return implode("\n", $getErrors);
     }
 
     protected function showUnauthenticatedError(): string
