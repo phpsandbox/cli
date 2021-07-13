@@ -56,13 +56,10 @@ class ExportCommand extends Command
         $this->multiTask('Exporting project to phpsandbox', function () use ($auth, $zip, $validate): void {
             $this->tasks('Checking for authenticated user', function () use ($auth) {
                 if (! $auth->check()) {
-                    if ($this->confirm('You are not authenticated, do you want to continue as guest?')) {
-                        $this->info('Authenticated as guest');
-
-                        return true;
+                    if ($this->confirm('You are not authenticated, do you want to log in now?')) {
+                        return ($this->call('login')) == Command::SUCCESS;
                     }
-
-                    return ($this->call('login')) == Command::SUCCESS;
+                    return false;
                 }
 
                 return true;

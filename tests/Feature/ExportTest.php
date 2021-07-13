@@ -16,31 +16,19 @@ class ExportTest extends TestCase
      *
      * @test
      */
-    public function willAllowUnauthenticatedUserExportProject(): void
+    public function willNotAllowUnauthenticatedUserExportProject(): void
     {
         $this->partialMock(AuthenticationContract::class, function ($mock): void {
             $mock->shouldReceive('check')->andReturn(false);
             $mock->shouldReceive('retrieveToken')->andReturn('token');
         });
 
-        $this->partialMock(Validation::class, function ($mock): void {
-            $mock->shouldReceive('validate')->twice()->andReturn(true);
-        });
-
-        $this->mock(ZipExportContract::class, function ($mock): void {
-            $mock->shouldReceive('setWorkingDir')->with(getcwd());
-            $mock->shouldReceive('compress')->once()->andReturn('filename.zip');
-            $mock->shouldReceive('upload')->once()->andReturn(['notebook' => ['some notebook details'], 'message' => 'some message']);
-            $mock->shouldReceive('cleanUp')->once();
-            $mock->shouldReceive('openNotebook')->once();
-        });
-
         $this->artisan('export')
             ->expectsOutput('Exporting project to phpsandbox : starting')
             ->expectsOutput('Checking for authenticated user: loading...')
-            ->expectsConfirmation('You are not authenticated, do you want to continue as guest?', 'yes')
-            ->expectsOutput('Authenticated as guest')
-            ->expectsOutput('Exporting project to phpsandbox : completed')
+            ->expectsConfirmation('You are not authenticated, do you want to log in now?', 'no')
+            ->expectsOutput('Checking for authenticated user: failed')
+            ->expectsOutput('Exporting project to phpsandbox : failed')
             ->assertExitCode(0);
     }
 
@@ -94,7 +82,7 @@ class ExportTest extends TestCase
         $this->artisan('export')
             ->expectsOutput('Exporting project to phpsandbox : starting')
             ->expectsOutput('Checking for authenticated user: loading...')
-            ->expectsConfirmation('You are not authenticated, do you want to continue as guest?', 'no')
+            ->expectsConfirmation('You are not authenticated, do you want to log in now?', 'yes')
             ->expectsQuestion('Enter the authentication token copied from the browser', 'some-random-token')
             ->expectsOutput('Exporting project to phpsandbox : failed')
             ->assertExitCode(0);
