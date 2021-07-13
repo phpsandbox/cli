@@ -4,7 +4,11 @@ namespace Tests\Feature;
 
 use App\Contracts\AuthenticationContract;
 use App\Contracts\ZipExportContract;
+use App\Exceptions\HttpException;
 use App\Services\Validation;
+use Illuminate\Http\Client\RequestException;
+use Illuminate\Support\Facades\Http;
+use Mockery;
 use Tests\TestCase;
 
 class ExportTest extends TestCase
@@ -20,9 +24,11 @@ class ExportTest extends TestCase
             $mock->shouldReceive('check')->andReturn(false);
             $mock->shouldReceive('retrieveToken')->andReturn('token');
         });
+
         $this->partialMock(Validation::class, function ($mock): void {
             $mock->shouldReceive('validate')->twice()->andReturn(true);
         });
+
         $this->mock(ZipExportContract::class, function ($mock): void {
             $mock->shouldReceive('setWorkingDir')->with(getcwd());
             $mock->shouldReceive('compress')->once()->andReturn('filename.zip');
@@ -32,9 +38,10 @@ class ExportTest extends TestCase
         });
 
         $this->artisan('export')
-            ->expectsQuestion('You are not authenticated, do you want to continue as guest?', 'yes')
-            ->expectsOutput('Authenticated as guest')
             ->expectsOutput('Exporting project to phpsandbox : starting')
+            ->expectsOutput('Checking for authenticated user: loading...')
+            ->expectsConfirmation('You are not authenticated, do you want to continue as guest?', 'yes')
+            ->expectsOutput('Authenticated as guest')
             ->expectsOutput('Exporting project to phpsandbox : completed')
             ->assertExitCode(0);
     }
@@ -51,9 +58,11 @@ class ExportTest extends TestCase
             $mock->shouldReceive('check')->andReturn(true);
             $mock->shouldReceive('retrieveToken')->andReturn('token');
         });
+
         $this->partialMock(Validation::class, function ($mock): void {
             $mock->shouldReceive('validate')->twice()->andReturn(true);
         });
+
         $this->mock(ZipExportContract::class, function ($mock): void {
             $mock->shouldReceive('setWorkingDir')->with(getcwd());
             $mock->shouldReceive('compress')->once()->andReturn('filename.zip');
@@ -65,6 +74,28 @@ class ExportTest extends TestCase
         $this->artisan('export')
             ->expectsOutput('Exporting project to phpsandbox : starting')
             ->expectsOutput('Exporting project to phpsandbox : completed')
+            ->assertExitCode(0);
+    }
+
+    public function test_will_not_export_if_authentication_fails()
+    {
+       // Http::fake();
+
+        $this->mock(AuthenticationContract::class, function ($mock): void {
+            $mock->shouldReceive('check')->andReturn(false);
+            $mock->shouldReceive('launchBrowser')->once();
+            $mock->shouldReceive('fetchCliToken')->once()->andReturnUsing(function () {
+                throw new HttpException("Invalid token");
+            });
+            $mock->shouldReceive('getTokenUrl')->andReturn('http://phpsandbox/login/cli');
+        });
+
+        $this->artisan('export')
+            ->expectsOutput('Exporting project to phpsandbox : starting')
+            ->expectsOutput('Checking for authenticated user: loading...')
+            ->expectsConfirmation('You are not authenticated, do you want to continue as guest?', 'no')
+            ->expectsQuestion("Enter the authentication token copied from the browser", "some-random-token")
+            ->expectsOutput('Exporting project to phpsandbox : failed')
             ->assertExitCode(0);
     }
 }
