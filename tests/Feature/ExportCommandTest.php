@@ -9,7 +9,7 @@ use App\Services\Validation;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
-class ExportTest extends TestCase
+class ExportCommandTest extends TestCase
 {
     /**
      * test will export file of unauthenticated user
