@@ -68,8 +68,6 @@ class ExportCommandTest extends TestCase
      */
     public function willNotExportIfAuthenticationFails(): void
     {
-        // Http::fake();
-
         $this->mock(AuthenticationContract::class, function ($mock): void {
             $mock->shouldReceive('check')->andReturn(false);
             $mock->shouldReceive('launchBrowser')->once();
