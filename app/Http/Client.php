@@ -45,21 +45,21 @@ class Client
         $this->buildHttpClient();
     }
 
-    protected function setFileUploadUrl(): static
+    protected function setFileUploadUrl(): Client
     {
         $this->fileUploadUrl = '/cli/import';
 
         return $this;
     }
 
-    protected function setRedirectToBrowserUrl(): static
+    protected function setRedirectToBrowserUrl(): Client
     {
         $this->redirectToBrowserUrl = sprintf('%s/login/cli', config('psb.base_url'));
 
         return $this;
     }
 
-    protected function setFetchCliTokenUrl(): static
+    protected function setFetchCliTokenUrl(): Client
     {
         $this->fetchCliTokenUrl = 'cli/login';
 
@@ -115,7 +115,7 @@ class Client
         $this->httpClient = Http::baseUrl(sprintf('%s/api', config('psb.base_url')))->withHeaders($this->headers);
     }
 
-    protected function withMainHeaders(): static
+    protected function withMainHeaders(): Client
     {
         $this->httpClient->withHeaders([
             'Content-Type' => 'application/json',
@@ -125,7 +125,7 @@ class Client
         return $this;
     }
 
-    public function authenticateAs(string $token): static
+    public function authenticateAs(string $token): Client
     {
         $this->httpClient->withHeaders(['Authorization' => "Bearer $token"]);
 

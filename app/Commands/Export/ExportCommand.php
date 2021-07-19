@@ -33,7 +33,7 @@ class ExportCommand extends Command
 
     private $file_name;
 
-    private string $exportDirectory;
+    private ?string $exportDirectory;
 
     public function __construct()
     {
@@ -46,10 +46,6 @@ class ExportCommand extends Command
         AuthenticationContract $auth,
         Validation $validate
     ): void {
-
-        /**
-         * @var $exportDirectory string
-         */
         if ($exportDirectory = $this->argument('path')) {
             $this->exportDirectory = $exportDirectory;
         }
@@ -57,13 +53,19 @@ class ExportCommand extends Command
         $this->displayDetails();
         $zip->setWorkingDir($this->exportDirectory);
 
-        if (! $auth->check()) {
-            $this->confirm('You are not authenticated, do you want to continue as guest?')
-            ? $this->info('Authenticated as guest')
-            : $this->call('login');
-        }
-
         $this->multiTask('Exporting project to phpsandbox', function () use ($auth, $zip, $validate): void {
+            $this->tasks('Checking for authenticated user', function () use ($auth) {
+                if (! $auth->check()) {
+                    if ($this->confirm('You are not authenticated, do you want to log in now?')) {
+                        return ($this->call('login')) == Command::SUCCESS;
+                    }
+
+                    return false;
+                }
+
+                return true;
+            });
+
             $this->tasks('Running notebook pre-compression validation', function () use ($validate) {
                 if (! $validate->validate(getcwd(), ['hasComposer','composerIsValid'])) {
                     $this->error(implode("\n", $validate->errors()));

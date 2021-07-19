@@ -24,7 +24,7 @@ class Authentication implements AuthenticationContract
     /**
      *  Default uri to generate token;
      */
-    protected  string $tokenUrl = '';
+    protected string $tokenUrl = '';
 
     /**
      * Default uri to validate token

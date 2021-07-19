@@ -33,7 +33,7 @@ class LoginCommand extends Command
      */
     public function handle(AuthenticationContract  $auth)
     {
-        $this->task('Authenticating', function () use ($auth) {
+        $status = $this->task('Authenticating', function () use ($auth) {
             if (! $auth->check()) {
                 if ($this->triggerNewLogin($auth)) {
                     $token = $auth->retrieveToken();
@@ -45,9 +45,9 @@ class LoginCommand extends Command
             }
 
             $this->info('Already authenticated');
-
-            return true;
         });
+
+        return $status ? Command::SUCCESS : Command::FAILURE;
     }
 
     protected function tokenValidation(AuthenticationContract  $auth, $token): bool
