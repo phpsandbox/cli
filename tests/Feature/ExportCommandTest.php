@@ -6,7 +6,6 @@ use App\Contracts\AuthenticationContract;
 use App\Contracts\ZipExportContract;
 use App\Exceptions\HttpException;
 use App\Services\Validation;
-use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class ExportCommandTest extends TestCase

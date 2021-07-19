@@ -59,6 +59,7 @@ class ExportCommand extends Command
                     if ($this->confirm('You are not authenticated, do you want to log in now?')) {
                         return ($this->call('login')) == Command::SUCCESS;
                     }
+
                     return false;
                 }
 
