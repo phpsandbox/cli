@@ -1,6 +1,6 @@
 <?php
 
-use App\Services\Validation;
+use App\Services\ValidationService;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -10,13 +10,13 @@ use Tests\TestCase;
 class ValidationTest extends TestCase
 {
     /**
-     * @var Validation
+     * @var ValidationService
      */
-    private Validation $validator;
+    private ValidationService $validator;
 
     protected function setUp(): void
     {
-        $this->validator = new Validation();
+        $this->validator = new ValidationService();
         $app = $this->createApplication();
         Storage::fake();
     }
@@ -111,7 +111,7 @@ class ValidationTest extends TestCase
 
     protected function tearDown(): void
     {
-        $this->validator = new Validation();
+        $this->validator = new ValidationService();
         $app = null;
     }
 }

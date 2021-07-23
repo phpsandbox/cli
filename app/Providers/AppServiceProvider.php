@@ -5,7 +5,7 @@ namespace App\Providers;
 use App\Contracts\AuthenticationContract;
 use App\Contracts\BrowserContract;
 use App\Contracts\ZipExportContract;
-use App\Services\Authentication;
+use App\Services\AuthenticationService;
 use App\Services\BrowserService;
 use App\Services\ZipExportService;
 use Illuminate\Support\Facades\File;
@@ -15,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
 {
     public array $bindings = [
         BrowserContract::class => BrowserService::class,
-        AuthenticationContract::class => Authentication::class,
+        AuthenticationContract::class => AuthenticationService::class,
         ZipExportContract::class => ZipExportService::class,
     ];
 

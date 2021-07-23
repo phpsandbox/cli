@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\File;
 use JsonException;
 use LaravelZero\Framework\Commands\Command;
 
-class Init extends Command
+class InitCommand extends Command
 {
     /**
      * The signature of the command.

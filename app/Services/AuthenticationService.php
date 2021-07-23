@@ -13,9 +13,9 @@ use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\File;
 
 /**
- * Class Authentication
+ * Class AuthenticationService
  */
-class Authentication implements AuthenticationContract
+class AuthenticationService implements AuthenticationContract
 {
     use FormatHttpErrorResponse;
 
@@ -45,14 +45,14 @@ class Authentication implements AuthenticationContract
         $this->client = new Client();
     }
 
-    protected function setTokenStorage(): Authentication
+    protected function setTokenStorage(): AuthenticationService
     {
         $this->tokenStorage = config('psb.token_storage');
 
         return $this;
     }
 
-    protected function setTokenUrl(): Authentication
+    protected function setTokenUrl(): AuthenticationService
     {
         $this->tokenUrl = sprintf('%s/login/cli', config('psb.base_url'));
 
@@ -64,7 +64,7 @@ class Authentication implements AuthenticationContract
         return $this->tokenUrl ?: '';
     }
 
-    protected function setValidateTokenUrl(): Authentication
+    protected function setValidateTokenUrl(): AuthenticationService
     {
         $this->validateTokenUrl = sprintf('%s/api/cli/login', config('psb.base_url'));
 

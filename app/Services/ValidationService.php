@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 use Seld\JsonLint\ParsingException;
 use UnexpectedValueException;
 
-class Validation
+class ValidationService
 {
     protected string $directory;
 
@@ -49,7 +49,7 @@ class Validation
 
     public function errors(): array
     {
-        return $this->errors->toArray();
+        return $this->errors->unique()->toArray();
     }
 
     protected function validateHasComposer(): bool

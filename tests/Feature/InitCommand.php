@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
-class ConfigInitCommand extends TestCase
+class InitCommand extends TestCase
 {
     /**
      * @dataProvider availableTemplates

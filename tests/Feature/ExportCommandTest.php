@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use App\Contracts\AuthenticationContract;
 use App\Contracts\ZipExportContract;
 use App\Exceptions\HttpException;
-use App\Services\Validation;
+use App\Services\ValidationService;
 use Tests\TestCase;
 
 class ExportCommandTest extends TestCase
@@ -25,7 +25,7 @@ class ExportCommandTest extends TestCase
         $this->artisan('export')
             ->expectsOutput('Exporting project to phpsandbox : starting')
             ->expectsOutput('Checking for authenticated user: loading...')
-            ->expectsConfirmation('You are not authenticated, do you want to log in now?', 'no')
+            ->expectsConfirmation('Only authenticated users can export to PHPSandbox, do you want to log in now?', 'no')
             ->expectsOutput('Checking for authenticated user: failed')
             ->expectsOutput('Exporting project to phpsandbox : failed')
             ->assertExitCode(0);
@@ -44,7 +44,7 @@ class ExportCommandTest extends TestCase
             $mock->shouldReceive('retrieveToken')->andReturn('token');
         });
 
-        $this->partialMock(Validation::class, function ($mock): void {
+        $this->partialMock(ValidationService::class, function ($mock): void {
             $mock->shouldReceive('validate')->twice()->andReturn(true);
         });
 
@@ -79,7 +79,7 @@ class ExportCommandTest extends TestCase
         $this->artisan('export')
             ->expectsOutput('Exporting project to phpsandbox : starting')
             ->expectsOutput('Checking for authenticated user: loading...')
-            ->expectsConfirmation('You are not authenticated, do you want to log in now?', 'yes')
+            ->expectsConfirmation('Only authenticated users can export to PHPSandbox, do you want to log in now?', 'yes')
             ->expectsQuestion('Enter the authentication token copied from the browser', 'some-random-token')
             ->expectsOutput('Exporting project to phpsandbox : failed')
             ->assertExitCode(0);

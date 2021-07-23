@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Contracts\AuthenticationContract;
-use App\Services\Authentication;
+use App\Services\AuthenticationService;
 use Tests\TestCase;
 
 class LoginCommandTest extends TestCase
@@ -13,7 +13,7 @@ class LoginCommandTest extends TestCase
      */
     public function freshLoginCommand(): void
     {
-        $this->partialMock(Authentication::class, function ($mock): void {
+        $this->partialMock(AuthenticationService::class, function ($mock): void {
             $mock->shouldReceive('check')->andReturn(false);
             $mock->shouldReceive('launchBrowser')->once();
             $mock->shouldReceive('fetchCliToken')->once()->andReturn('randomToken');
@@ -31,7 +31,7 @@ class LoginCommandTest extends TestCase
      */
     public function loginWorksIfAccessTokenOptionIsProvidedAndBrowserIsNotOpened(): void
     {
-        $this->mock(Authentication::class, function ($mock): void {
+        $this->mock(AuthenticationService::class, function ($mock): void {
             $mock->shouldReceive('check')->andReturn(false);
             $mock->shouldReceive('fetchCliToken')->once()->andReturn('randomToken');
             $mock->shouldReceive('retrieveToken')->once()->andReturn('rightToken');
@@ -78,7 +78,7 @@ class LoginCommandTest extends TestCase
         });
 
         $this->artisan('login --token=randomTokwn')
-            ->expectsOutput('Authentication was successful.')
+            ->expectsOutput('AuthenticationService was successful.')
             ->assertExitCode(0);
     }
 }

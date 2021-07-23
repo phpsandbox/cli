@@ -5,7 +5,7 @@ namespace App\Commands\Export;
 use App\Contracts\AuthenticationContract;
 use App\Contracts\ZipExportContract;
 use App\Exceptions\HttpException;
-use App\Services\Validation;
+use App\Services\ValidationService;
 use App\Traits\FormatHttpErrorResponse;
 use App\Traits\Multitask;
 use Illuminate\Support\Facades\File;
@@ -44,7 +44,7 @@ class ExportCommand extends Command
     public function handle(
         ZipExportContract $zip,
         AuthenticationContract $auth,
-        Validation $validate
+        ValidationService $validate
     ): void {
         if ($exportDirectory = $this->argument('path')) {
             $this->exportDirectory = $exportDirectory;
@@ -56,7 +56,7 @@ class ExportCommand extends Command
         $this->multiTask('Exporting project to phpsandbox', function () use ($auth, $zip, $validate): void {
             $this->tasks('Checking for authenticated user', function () use ($auth) {
                 if (! $auth->check()) {
-                    if ($this->confirm('You are not authenticated, do you want to log in now?')) {
+                    if ($this->confirm('Only authenticated users can export to PHPSandbox, do you want to log in now?', 'yes')) {
                         return ($this->call('login')) == Command::SUCCESS;
                     }
 

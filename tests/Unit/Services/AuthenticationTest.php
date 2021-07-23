@@ -3,7 +3,7 @@
 namespace Tests\Unit\Services;
 
 use App\Exceptions\HttpException;
-use App\Services\Authentication;
+use App\Services\AuthenticationService;
 use App\Services\BrowserService;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
@@ -20,7 +20,7 @@ class AuthenticationTest extends TestCase
         Storage::put('tokens/token', 'token');
         config(['psb.token_storage' => Storage::path('tokens/token')]);
 
-        $auth = new Authentication();
+        $auth = new AuthenticationService();
         $this->assertTrue($auth->retrieveToken() == 'token');
     }
 
@@ -33,7 +33,7 @@ class AuthenticationTest extends TestCase
         Storage::put('tokens/token', 'token');
         config(['psb.token_storage' => Storage::path('tokens/token')]);
 
-        $auth = new Authentication();
+        $auth = new AuthenticationService();
         $auth->logout();
         Storage::assertMissing('tokens/token');
     }
@@ -48,7 +48,7 @@ class AuthenticationTest extends TestCase
         Http::fake([
             sprintf('%s/api/user', $base_url) => Http::response([''], 200),
         ]);
-        $auth = new Authentication();
+        $auth = new AuthenticationService();
         $this->assertTrue($auth->tokenIsValid('rightToken'));
     }
 
@@ -62,7 +62,7 @@ class AuthenticationTest extends TestCase
         Http::fake([
             sprintf('%s/api/user', $base_url) => Http::response([''], 401),
         ]);
-        $auth = new Authentication();
+        $auth = new AuthenticationService();
         $this->assertFalse($auth->tokenIsValid('wrongToken'));
     }
 
@@ -74,7 +74,7 @@ class AuthenticationTest extends TestCase
         Storage::makeDirectory('tokens');
         config(['psb.token_storage' => Storage::path('tokens') . '/token']);
 
-        $auth = new Authentication();
+        $auth = new AuthenticationService();
         $auth->storeNewToken('token');
         Storage::assertExists('tokens/token');
         $this->assertSame('token', Storage::get('tokens/token'));
@@ -88,7 +88,7 @@ class AuthenticationTest extends TestCase
         $this->partialMock(BrowserService::class, function ($mock): void {
             $mock->shouldReceive('open')->once();
         });
-        $auth = new Authentication();
+        $auth = new AuthenticationService();
         $auth->launchBrowser();
     }
 }

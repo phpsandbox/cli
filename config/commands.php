@@ -60,6 +60,7 @@ return [
         Illuminate\Console\Scheduling\ScheduleRunCommand::class,
         Illuminate\Console\Scheduling\ScheduleFinishCommand::class,
         Illuminate\Foundation\Console\VendorPublishCommand::class,
+
     ],
 
     /*
@@ -74,7 +75,7 @@ return [
     */
 
     'remove' => [
-        // ..
+        \LaravelZero\Framework\Components\Updater\SelfUpdateCommand::class
     ],
 
 ];
