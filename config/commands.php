@@ -1,5 +1,8 @@
 <?php
 
+use LaravelZero\Framework\Commands\BuildCommand;
+use LaravelZero\Framework\Components\Updater\SelfUpdateCommand;
+
 return [
 
     /*
@@ -75,7 +78,8 @@ return [
     */
 
     'remove' => [
-        \LaravelZero\Framework\Components\Updater\SelfUpdateCommand::class
+        SelfUpdateCommand::class,
+
     ],
 
 ];
