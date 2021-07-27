@@ -28,7 +28,7 @@ jobs:
       - name: Remove exisiting builds
         run: rm -r ./builds/*
       - name: Build a new executable
-        run: php psb app:build
+        run: php psb app:build --build-version=0.0.1
       - name: Commit executable to the repo
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
