@@ -54,7 +54,7 @@ class LoginCommand extends Command
     {
         try {
             $auth->tokenIsValid($token)
-                ? $this->info('AuthenticationService was successful.')
+                ? $this->info('Authentication was successful.')
                 : $this->error('Token could not be validated.');
 
             return true;

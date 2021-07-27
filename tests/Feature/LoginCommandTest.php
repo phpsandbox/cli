@@ -78,7 +78,7 @@ class LoginCommandTest extends TestCase
         });
 
         $this->artisan('login --token=randomTokwn')
-            ->expectsOutput('AuthenticationService was successful.')
+            ->expectsOutput('Authentication was successful.')
             ->assertExitCode(0);
     }
 }
