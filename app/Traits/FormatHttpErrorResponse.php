@@ -20,15 +20,17 @@ trait FormatHttpErrorResponse
                 return $this->showUnauthenticatedError();
                 break;
             case 404:
-                return $this->missingResource($errorMsg);
+                return $this->showMissingResource($errorMsg);
                 break;
+            case 403:
+                return $this->showAuthorizationError();
             default: return 'An error occurred';
         }
     }
 
     protected function showServerError(): string
     {
-        return 'Could not complete request. Kindly raise an issue if it persist.';
+        return 'The server responded with a 500 error. Kindly raise an issue if it persist.';
     }
 
     protected function showValidationError(RequestException $e): string
@@ -43,11 +45,16 @@ trait FormatHttpErrorResponse
 
     protected function showUnauthenticatedError(): string
     {
-        return 'You are not authenticated to make this request.';
+        return 'The server responded with a 401 error, You are not authenticated to make this request.';
     }
 
-    protected function missingResource(string $errorMsg = ''): string
+    protected function showMissingResource(string $errorMsg = ''): string
     {
         return $errorMsg == '' ? 'Something went wrong, please try again.' : $errorMsg;
+    }
+
+    protected function showAuthorizationError()
+    {
+        return ' The server responded with a 403 error. You are not authorized to make this request.';
     }
 }
