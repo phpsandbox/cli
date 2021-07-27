@@ -9,6 +9,7 @@ trait FormatHttpErrorResponse
 {
     public function formatError(RequestException $e, string $errorMsg = ''): string
     {
+        throw $e;
         switch ($e->getCode()) {
             case $e->response->serverError():
                 return $this->showServerError();
