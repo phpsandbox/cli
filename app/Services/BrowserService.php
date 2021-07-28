@@ -11,10 +11,14 @@ class BrowserService
 
     public function getSystemCommand(): string
     {
-        return match (PHP_OS) {
-            'Darwin' => 'open',
-            'WINNT' => 'start',
-            default => 'xdg-open',
+        switch (PHP_OS) {
+            case 'Darwin':
+                return 'open';
+                break;
+            case 'WINNT':
+                return 'start';
+                break;
+            default:  'xdg-open';
         };
     }
 

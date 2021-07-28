@@ -55,16 +55,21 @@ class ExportCommand extends Command
 
         $this->multiTask('Exporting project to phpsandbox', function () use ($auth, $zip, $validate): void {
             $this->tasks('Checking for authenticated user', function () use ($auth) {
-                if (! $auth->check()) {
-                    if ($this->confirm('Only authenticated users can export to PHPSandbox, do you want to log in now?', 'yes')) {
-                        return ($this->call('login')) == Command::SUCCESS;
-                    }
+                try {
+                    if (! $auth->check()) {
+                        if ($this->confirm('Only authenticated users can export to PHPSandbox, do you want to log in now?', 'yes')) {
+                            return ($this->call('login')) == Command::SUCCESS;
+                        }
 
+                        return false;
+                    }
+                    return true;
+                } catch (HttpException $e) {
+                    $this->error($e->getMessage());
                     return false;
                 }
-
-                return true;
             });
+
 
             $this->tasks('Running notebook pre-compression validation', function () use ($validate) {
                 if (! $validate->validate(getcwd(), ['hasComposer','composerIsValid'])) {

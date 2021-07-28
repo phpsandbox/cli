@@ -46,7 +46,11 @@ class ZipExportService implements ZipExportContract
         $this->fileStoragePath = config('psb.files_storage');
     }
 
-    public function compress(): bool | string
+    /**
+     * @return bool|string
+     * @throws \PhpZip\Exception\ZipException
+     */
+    public function compress()
     {
         return $this->createZip();
     }
@@ -58,7 +62,11 @@ class ZipExportService implements ZipExportContract
         return $this;
     }
 
-    protected function createZip(): bool | string
+    /**
+     * @return bool| string
+     * @throws \PhpZip\Exception\ZipException
+     */
+    protected function createZip()
     {
         $directoryIterator = new RecursiveDirectoryIterator($this->getZipPath());
 
@@ -97,10 +105,17 @@ class ZipExportService implements ZipExportContract
         return implode(DIRECTORY_SEPARATOR, [$this->fileStoragePath,$path]);
     }
 
-    public function upload($filepath, $token = ''): mixed
+    /**
+     * @return array|mixed|null
+     */
+    public function upload(string $filepath, string $token = '')
     {
         try {
-            return $this->client->uploadCompressedFile($filepath, $token);
+             if ( $response = $this->client->uploadCompressedFile($filepath, $token)) {
+                 return $response;
+             }
+
+             throw new HttpException('Could not export project.');
         } catch (ConnectionException $e) {
             throw new HttpException('Could not connect to PHPSandbox');
         } catch (RequestException $e) {

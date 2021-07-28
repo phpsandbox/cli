@@ -104,7 +104,7 @@ class ImportNotebookCommand extends Command
 
     public function progressBar(): Closure
     {
-        return function (CurlHandle $downloadTotal, int $downloadedBytes): void {
+        return function ($downloadTotal, int $downloadedBytes): void {
             if (self::$importStarted) {
                 $this->output->progressAdvance((int) $downloadedBytes);
             } else {

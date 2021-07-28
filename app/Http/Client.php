@@ -83,7 +83,7 @@ class Client
         ])->get("/notebook/download/$uniqueId")->throw()->body();
     }
 
-    public function uploadCompressedFile(string $file_path, string $token): array
+    public function uploadCompressedFile(string $file_path, string $token): ?array
     {
         $client = $token != ''
             ? $this->authenticateAs($token)->getClient()

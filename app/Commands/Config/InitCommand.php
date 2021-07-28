@@ -46,14 +46,15 @@ class InitCommand extends Command
         }
 
         if (! File::exists($this->configFileLocation())) {
-            File::put($this->configFileLocation(), '{}');
+            File::put($this->configFileLocation(), json_encode((object) []));
         }
 
         try {
+          //  dd(json_decode(File::get($this->configFileLocation())), true);
             $config = json_decode(
                 File::get($this->configFileLocation()),
                 true,
-                1,
+                10,
                 JSON_THROW_ON_ERROR
             );
 

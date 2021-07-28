@@ -34,17 +34,22 @@ class LoginCommand extends Command
     public function handle(AuthenticationContract  $auth)
     {
         $status = $this->task('Authenticating', function () use ($auth) {
-            if (! $auth->check()) {
-                if ($this->triggerNewLogin($auth)) {
-                    $token = $auth->retrieveToken();
+            try {
+                if (!$auth->check()) {
+                    if ($this->triggerNewLogin($auth)) {
+                        $token = $auth->retrieveToken();
 
-                    return $this->tokenValidation($auth, $token);
+                        return $this->tokenValidation($auth, $token);
+                    }
+
+                    return false;
                 }
 
+                $this->info('Already authenticated');
+            } catch (HttpException $e) {
+                $this->error($e->getMessage());
                 return false;
             }
-
-            $this->info('Already authenticated');
         });
 
         return $status ? Command::SUCCESS : Command::FAILURE;
@@ -58,7 +63,8 @@ class LoginCommand extends Command
                 : $this->error('Token could not be validated.');
 
             return true;
-        } catch (HttpException $e) {
+        } catch (\Exception $e) {
+
             $this->error($e->getMessage());
 
             return false;

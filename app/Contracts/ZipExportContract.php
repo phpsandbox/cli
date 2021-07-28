@@ -6,7 +6,10 @@ use App\Services\ZipExportService;
 
 interface ZipExportContract
 {
-    public function compress(): bool | string;
+    /**
+     * @return bool | string
+     */
+    public function compress();
 
     public function setWorkingDir(?string $path): ZipExportService;
 
@@ -14,5 +17,10 @@ interface ZipExportContract
 
     public function openNotebook(array $details, string $token): string;
 
-    public function upload($filepath, $token = ''): mixed;
+    /**
+     * @param string $filepath
+     * @param string $token
+     * @return mixed
+     */
+    public function upload(string $filepath, string $token = '');
 }
