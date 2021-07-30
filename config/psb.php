@@ -37,7 +37,7 @@ return [
     |maximum file upload size in megabyte
     |
     */
-    'max_file_size' => 100,
+    'max_file_size' => 10,
     /*
     |--------------------------------------------------------------------------
     | files to ignore when zipping the project
