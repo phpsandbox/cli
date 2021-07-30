@@ -50,7 +50,6 @@ class InitCommand extends Command
         }
 
         try {
-          //  dd(json_decode(File::get($this->configFileLocation())), true);
             $config = json_decode(
                 File::get($this->configFileLocation()),
                 true,
