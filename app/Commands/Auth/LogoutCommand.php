@@ -3,6 +3,7 @@
 namespace App\Commands\Auth;
 
 use App\Contracts\AuthenticationContract;
+use App\Exceptions\HttpException;
 use LaravelZero\Framework\Commands\Command;
 
 class LogoutCommand extends Command
@@ -29,17 +30,22 @@ class LogoutCommand extends Command
     public function handle(AuthenticationContract $auth)
     {
         $this->task('Logging out user', function () use ($auth) {
-            if (! $auth->check()) {
-                $this->info('No authenticated user found');
+            try {
+                if (! $auth->check()) {
+                    $this->info('No authenticated user found');
+
+                    return true;
+                }
+
+                $auth->logout()
+                    ? $this->info('User logged out successfully')
+                    : $this->error('An error occurred');
 
                 return true;
+            } catch (HttpException $e) {
+                $this->error($e->getMessage());
+                return false;
             }
-
-            $auth->logout()
-                ? $this->info('User logged out successfully')
-                : $this->error('An error occurred');
-
-            return true;
         });
     }
 }
