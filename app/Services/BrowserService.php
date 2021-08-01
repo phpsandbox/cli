@@ -18,7 +18,8 @@ class BrowserService
             case 'WINNT':
                 return 'start';
                 break;
-            default:  'xdg-open';
+            default:
+                return 'xdg-open';
         };
     }
 
