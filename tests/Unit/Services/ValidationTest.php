@@ -60,6 +60,8 @@ class ValidationTest extends TestCase
         config(['psb.max_file_size' => -1]);
 
         Storage::makeDirectory('project');
+        Storage::makeDirectory('project:withcolon');
+
         Storage::put('project/index.zip', "<?php echo 'hello' ?>");
 
         $this->assertFalse($this->validator->validate(Storage::path('project'), [
@@ -74,6 +76,13 @@ class ValidationTest extends TestCase
 
         $this->assertTrue($this->validator->validate(Storage::path('project'), [
             'size:' . Storage::path('project/hello.zip'),
+        ]));
+
+        /** test for file path containing colon */
+        Storage::put('project:withcolon/hello.zip', "<?php echo 'hello' ?>");
+
+        $this->assertTrue($this->validator->validate(Storage::path('project'), [
+            'size:' . Storage::path('project:withcolon/hello.zip'),
         ]));
     }
 

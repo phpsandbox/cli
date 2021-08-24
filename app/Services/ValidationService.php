@@ -35,7 +35,7 @@ class ValidationService
 
     protected function parseRule(string $rule): array
     {
-        $pieces = explode(':', $rule);
+        $pieces = explode(':', $rule, 2);
 
         return strpos($rule, ':') === false
                 ? ['validate' . Str::studly($rule), null]
