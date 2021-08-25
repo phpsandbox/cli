@@ -3,11 +3,7 @@ name: Pull Request WorkFlow
 on:
   pull_request:
     branches:
-      - master
       - dev
-  push:
-    branches:
-      - master
 jobs:
   app-tests:
     runs-on: ubuntu-latest
