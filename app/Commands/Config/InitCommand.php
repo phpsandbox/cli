@@ -4,6 +4,7 @@ namespace App\Commands\Config;
 
 use Illuminate\Support\Facades\File;
 use JsonException;
+use function Laravel\Prompts\select;
 use LaravelZero\Framework\Commands\Command;
 
 class InitCommand extends Command
@@ -31,13 +32,16 @@ class InitCommand extends Command
      */
     public function handle()
     {
-        $template = $this->output->choice('Which notebook template will the project be identified as?', [
-            'Laravel Notebook' => 'laravel',
-            'Symfony' => 'symfony',
-            'Slim' => 'slim',
-            'Standard' => 'standard',
-            'ReactPHP' => 'react-php-http',
-        ]);
+        $template = select(
+            label: 'Which notebook template will the project be identified as ?',
+            options: [
+                'Laravel Notebook' => 'laravel',
+                'Symfony'          => 'symfony',
+                'Slim'             => 'slim',
+                'Standard'         => 'standard',
+                'ReactPHP'         => 'react-php-http',
+            ]
+        );
 
         $this->info("You have selected $template");
 

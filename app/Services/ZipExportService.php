@@ -111,11 +111,11 @@ class ZipExportService implements ZipExportContract
     public function upload(string $filepath, string $token = '')
     {
         try {
-             if ( $response = $this->client->uploadCompressedFile($filepath, $token)) {
-                 return $response;
-             }
+            if ($response = $this->client->uploadCompressedFile($filepath, $token)) {
+                return $response;
+            }
 
-             throw new HttpException('Could not export project.');
+            throw new HttpException('Could not export project.');
         } catch (ConnectionException $e) {
             throw new HttpException('Could not connect to PHPSandbox');
         } catch (RequestException $e) {

@@ -1,6 +1,5 @@
 <?php
 
-use LaravelZero\Framework\Commands\BuildCommand;
 use LaravelZero\Framework\Components\Updater\SelfUpdateCommand;
 
 return [

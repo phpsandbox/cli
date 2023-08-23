@@ -14,9 +14,9 @@ use Illuminate\Support\ServiceProvider;
 class AppServiceProvider extends ServiceProvider
 {
     public array $bindings = [
-        BrowserContract::class => BrowserService::class,
+        BrowserContract::class        => BrowserService::class,
         AuthenticationContract::class => AuthenticationService::class,
-        ZipExportContract::class => ZipExportService::class,
+        ZipExportContract::class      => ZipExportService::class,
     ];
 
     /**

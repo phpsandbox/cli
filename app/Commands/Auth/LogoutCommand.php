@@ -44,6 +44,7 @@ class LogoutCommand extends Command
                 return true;
             } catch (HttpException $e) {
                 $this->error($e->getMessage());
+
                 return false;
             }
         });

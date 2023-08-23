@@ -2,10 +2,10 @@
 
 return [
     'default' => 'local',
-    'disks' => [
+    'disks'   => [
         'local' => [
             'driver' => 'local',
-            'root' => getcwd(),
+            'root'   => getcwd(),
         ],
     ],
 ];

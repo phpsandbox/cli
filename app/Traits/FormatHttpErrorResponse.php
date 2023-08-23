@@ -9,23 +9,14 @@ trait FormatHttpErrorResponse
 {
     public function formatError(RequestException $e, string $errorMsg = ''): string
     {
-        switch ($e->getCode()) {
-            case $e->response->serverError():
-                return $this->showServerError();
-                break;
-            case 422:
-                return  $this->showValidationError($e);
-                break;
-            case 401:
-                return $this->showUnauthenticatedError();
-                break;
-            case 404:
-                return $this->showMissingResource($errorMsg);
-                break;
-            case 403:
-                return $this->showAuthorizationError();
-            default: return 'An error occurred';
-        }
+        return match ($e->getCode()) {
+            $e->response->serverError() => $this->showServerError(),
+            422                         => $this->showValidationError($e),
+            401                         => $this->showUnauthenticatedError(),
+            404                         => $this->showMissingResource($errorMsg),
+            403                         => $this->showAuthorizationError(),
+            default                     => 'An error occurred',
+        };
     }
 
     protected function showServerError(): string
@@ -53,7 +44,7 @@ trait FormatHttpErrorResponse
         return $errorMsg == '' ? 'Something went wrong, please try again.' : $errorMsg;
     }
 
-    protected function showAuthorizationError()
+    protected function showAuthorizationError(): string
     {
         return ' The server responded with a 403 error. You are not authorized to make this request.';
     }

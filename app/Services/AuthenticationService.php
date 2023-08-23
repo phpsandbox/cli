@@ -110,6 +110,7 @@ class AuthenticationService implements AuthenticationContract
             return $this->tokenIsValid(File::get($this->tokenStorage));
         } catch (HttpException $e) {
             $this->deleteTokenFile();
+
             throw $e;
         }
     }

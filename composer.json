@@ -12,23 +12,24 @@
         }
     ],
     "require": {
-        "php": "^7.4 || ^8.0",
+        "php": "^8.2",
+        "ext-curl": "*",
         "ext-json": "*",
-        "composer/composer": "^1.10",
-        "guzzlehttp/guzzle": "^6.5.5",
-        "illuminate/http": "^8.0",
+        "composer/composer": "^2.5.0",
+        "guzzlehttp/guzzle": "^7.7.0",
+        "illuminate/http": "^10.9.0",
         "laminas/laminas-text": "^2.7",
+        "laravel/prompts": "^0.1.6",
         "nelexa/zip": "^4.0",
         "padraic/phar-updater": "^1.0.6",
-        "symfony/finder": "^5.1",
-        "symfony/process": "^5.2",
-        "ext-curl": "*"
+        "symfony/finder": "^6.0.0.1",
+        "symfony/process": "^6.0.0"
     },
     "require-dev": {
-        "laravel-zero/framework": "^8.0",
+        "laravel-zero/framework": "^10.0",
         "mockery/mockery": "^1.4.2",
-        "phpunit/phpunit": "^9.3",
-        "friendsofphp/php-cs-fixer": "^2.18",
+        "phpunit/phpunit": "^10.3.0",
+        "friendsofphp/php-cs-fixer": "^3.23.0",
         "ext-zip": "*"
     },
     "autoload": {
@@ -50,6 +51,6 @@
     "prefer-stable": true,
     "bin": ["builds/psb"],
     "scripts":{
-        "fix-style":"php-cs-fixer fix --verbose"
+        "fix-style":"export PHP_CS_FIXER_IGNORE_ENV=1 && php-cs-fixer fix --verbose"
     }
 }

@@ -35,7 +35,7 @@ class LoginCommand extends Command
     {
         $status = $this->task('Authenticating', function () use ($auth) {
             try {
-                if (!$auth->check()) {
+                if (! $auth->check()) {
                     if ($this->triggerNewLogin($auth)) {
                         $token = $auth->retrieveToken();
 
@@ -48,6 +48,7 @@ class LoginCommand extends Command
                 $this->info('Already authenticated');
             } catch (HttpException $e) {
                 $this->error($e->getMessage());
+
                 return false;
             }
         });
