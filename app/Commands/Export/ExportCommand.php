@@ -58,18 +58,19 @@ class ExportCommand extends Command
                 try {
                     if (! $auth->check()) {
                         if ($this->confirm('Only authenticated users can export to PHPSandbox, do you want to log in now?', 'yes')) {
-                            return ($this->call('login')) == Command::SUCCESS;
+                            return $this->call('login') == Command::SUCCESS;
                         }
 
                         return false;
                     }
+
                     return true;
                 } catch (HttpException $e) {
                     $this->error($e->getMessage());
+
                     return false;
                 }
             });
-
 
             $this->tasks('Running notebook pre-compression validation', function () use ($validate) {
                 if (! $validate->validate(getcwd(), ['hasComposer','composerIsValid'])) {

@@ -8,7 +8,6 @@ use App\Services\ImportNotebookService;
 use App\Traits\FormatHttpErrorResponse;
 use App\Traits\Multitask;
 use Closure;
-use CurlHandle;
 use Exception;
 use LaravelZero\Framework\Commands\Command;
 

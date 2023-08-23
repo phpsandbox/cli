@@ -20,7 +20,7 @@ class BrowserService
                 break;
             default:
                 return 'xdg-open';
-        };
+        }
     }
 
     public function runCommand($command): void

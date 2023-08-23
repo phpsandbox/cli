@@ -3,8 +3,6 @@
 namespace App\Http;
 
 use Closure;
-use Illuminate\Config\Repository;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 
@@ -56,7 +54,7 @@ class Client
     {
         $this->httpClient->withHeaders([
             'Content-Type' => 'application/json',
-            'Accept' => 'application/json',
+            'Accept'       => 'application/json',
         ]);
 
         return $this;
@@ -65,6 +63,7 @@ class Client
     public function fetchCliToken(string $access_token): string
     {
         $response = $this->withMainHeaders()->getClient()->post($this->fetchCliTokenUrl, ['code' => $access_token]);
+
         return $response->throw()->json()['token'];
     }
 
@@ -78,7 +77,7 @@ class Client
     public function downloadNotebook(string $uniqueId, Closure $progressCallback): string
     {
         return $this->withMainHeaders()->getClient()->withOptions([
-            'sink' => config('psb.files_storage') . "/$uniqueId.zip",
+            'sink'     => config('psb.files_storage') . "/$uniqueId.zip",
             'progress' => $progressCallback,
         ])->get("/notebook/download/$uniqueId")->throw()->body();
     }
@@ -97,7 +96,10 @@ class Client
 
     public function authenticateAs(string $token): Client
     {
-        $this->httpClient->withHeaders(['Authorization' => "Bearer $token"]);
+        $this->httpClient->withHeaders([
+            'Authorization' => "Bearer $token",
+            'Accept'        => 'application/json',
+        ]);
 
         return $this;
     }
